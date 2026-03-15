@@ -6,12 +6,17 @@
 <title>MeetBook — Panel admina</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="style.css" />
+<style>
+  #login-screen { display: block; }
+  #admin-screen { display: none; }
+  .hidden       { display: none !important; }
+</style>
 </head>
 <body>
 
 <!-- ═══ LOGIN SCREEN ═══ -->
-<div id="login-screen" class="hidden">
+<div id="login-screen">
   <div class="login-wrap">
     <div class="login-card">
       <div class="brand">
@@ -42,7 +47,7 @@
 </div>
 
 <!-- ═══ ADMIN SCREEN ═══ -->
-<div id="admin-screen" class="hidden">
+<div id="admin-screen" style="display:none">
 
   <nav class="nav">
     <div class="nav-inner">
@@ -59,8 +64,6 @@
   </nav>
 
   <div class="admin-layout">
-
-    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <div class="sidebar-section">Menu</div>
 
@@ -87,17 +90,14 @@
       </button>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="admin-main" id="admin-content">
       <p class="muted">Ładowanie…</p>
     </main>
-
   </div>
 </div>
 
 <div id="toast-container"></div>
-
-<script src="js/data.js"></script>
-<script src="js/admin.js"></script>
+<script src="data.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
