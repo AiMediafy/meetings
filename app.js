@@ -222,7 +222,7 @@ const App = (() => {
   function showStep(step) {
     ["calendar-section","time-section","form-section","success-section"].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.classList.add("hidden");
+      if (el) el.style.display = "none";
     });
     const map = {
       calendar: "calendar-section",
@@ -231,7 +231,7 @@ const App = (() => {
       success:  "success-section",
     };
     const target = document.getElementById(map[step]);
-    if (target) target.classList.remove("hidden");
+    if (target) target.style.display = "block";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
