@@ -45,13 +45,13 @@ const Admin = (() => {
   }
 
   function showLogin() {
-    document.getElementById("login-screen").classList.remove("hidden");
-    document.getElementById("admin-screen").classList.add("hidden");
+    document.getElementById("login-screen").style.display = "block";
+    document.getElementById("admin-screen").style.display = "none";
   }
 
   function showPanel() {
-    document.getElementById("login-screen").classList.add("hidden");
-    document.getElementById("admin-screen").classList.remove("hidden");
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("admin-screen").style.display = "block";
     setText("admin-owner-name", CONFIG.ownerName);
     setText("admin-owner-initials", CONFIG.ownerInitials);
     renderPage("dashboard");
