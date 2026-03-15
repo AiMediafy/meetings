@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MeetBook — Panel admina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen" class="hidden">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div class="brand-name">MeetBook</div>
+      </div>
+      <h2>Panel administratora</h2>
+      <p class="sub">Zaloguj się, aby zarządzać kalendarzem</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="form-group">
+          <label class="form-label">Hasło</label>
+          <input class="form-input" id="login-pw" type="password"
+            placeholder="Wprowadź hasło"
+            onkeydown="Admin.handleLoginKey(event)" />
+          <span class="form-error hidden" id="login-err"></span>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="Admin.login()">Zaloguj się →</button>
+      </div>
+
+      <p class="muted2 t-xs text-center" style="margin-top:20px">
+        <a href="index.html" style="color:var(--text-3)">← Wróć na stronę</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN SCREEN ═══ -->
+<div id="admin-screen" class="hidden">
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand"><div class="dot"></div>MeetBook <span style="font-size:12px;font-weight:400;color:var(--text-3);margin-left:6px">Admin</span></div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <div class="avatar" style="width:30px;height:30px;font-size:12px" id="admin-owner-initials"></div>
+          <span class="fw-5 t-sm" id="admin-owner-name"></span>
+        </div>
+        <a href="book.html" class="btn btn-outline btn-sm" target="_blank">Widok publiczny ↗</a>
+        <button class="btn btn-ghost btn-sm" onclick="Admin.logout()">Wyloguj</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-section">Menu</div>
+
+      <button class="sidebar-item" data-page="dashboard" onclick="Admin.renderPage('dashboard')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+
+      <button class="sidebar-item" data-page="calendar" onclick="Admin.renderPage('calendar')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Kalendarz
+      </button>
+
+      <button class="sidebar-item" data-page="bookings" onclick="Admin.renderPage('bookings')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Rezerwacje
+      </button>
+
+      <div class="sidebar-section" style="margin-top:auto">Konto</div>
+
+      <button class="sidebar-item" data-page="settings" onclick="Admin.renderPage('settings')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Ustawienia
+      </button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main" id="admin-content">
+      <p class="muted">Ładowanie…</p>
+    </main>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

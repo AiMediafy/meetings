@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title id="page-title">Umów spotkanie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand"><div class="dot"></div>MeetBook</div>
+    <a href="index.html" class="nav-link">← Wróć</a>
+  </div>
+</nav>
+
+<main style="padding: 40px 16px; max-width: 960px; margin: 0 auto;">
+
+  <div style="display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start;">
+
+    <!-- LEFT: Host info & calendar -->
+    <div>
+      <!-- Host info -->
+      <div class="booking-panel" style="margin-bottom: 16px;">
+        <div class="host-info">
+          <div class="avatar" id="host-initials">TI</div>
+          <div>
+            <div class="host-name" id="host-name">Ładowanie…</div>
+            <div class="host-role" id="host-role"></div>
+          </div>
+        </div>
+        <div class="meeting-chip">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="meeting-duration"></span>
+        </div>
+        <div class="meeting-chip">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+          <span id="meeting-title"></span>
+        </div>
+      </div>
+
+      <!-- Mini calendar -->
+      <div class="card card-pad" id="calendar-section">
+        <div class="cal-wrap">
+          <div class="cal-header">
+            <button class="cal-nav" id="cal-prev">‹</button>
+            <span class="cal-title" id="cal-month-label"></span>
+            <button class="cal-nav" id="cal-next">›</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <p class="muted2 t-xs" style="margin-top: 12px; text-align: center;">Kliknij dzień aby wybrać godzinę</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Steps -->
+    <div>
+
+      <!-- STEP: choose time -->
+      <div id="time-section" class="hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <button class="btn btn-ghost btn-sm" onclick="App.goBack()">← Wróć</button>
+          <div>
+            <div class="fw-6 t-lg" id="slots-date-label"></div>
+            <div class="muted t-sm">Wybierz godzinę spotkania</div>
+          </div>
+        </div>
+        <div class="card card-pad" id="slots-container"></div>
+      </div>
+
+      <!-- STEP: booking form -->
+      <div id="form-section" class="hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <button class="btn btn-ghost btn-sm" onclick="App.goBack()">← Wróć</button>
+          <div>
+            <div class="fw-6 t-lg">Uzupełnij dane</div>
+            <div class="muted t-sm">Wyślemy potwierdzenie na Twój email</div>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div id="form-summary"></div>
+
+          <form onsubmit="App.submitBooking(event)" novalidate>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div class="form-group">
+                <label class="form-label">Imię <span class="req">*</span></label>
+                <input class="form-input" id="f-firstname" placeholder="Jan" autocomplete="given-name" />
+                <span class="form-error hidden" id="err-firstname"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nazwisko <span class="req">*</span></label>
+                <input class="form-input" id="f-lastname" placeholder="Kowalski" autocomplete="family-name" />
+                <span class="form-error hidden" id="err-lastname"></span>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label class="form-label">Email <span class="req">*</span></label>
+              <input class="form-input" id="f-email" type="email" placeholder="jan@firma.pl" autocomplete="email" />
+              <span class="form-error hidden" id="err-email"></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label class="form-label">Numer telefonu</label>
+              <input class="form-input" id="f-phone" type="tel" placeholder="+48 500 000 000" autocomplete="tel" />
+              <span class="form-error hidden" id="err-phone"></span>
+              <span class="form-hint">Opcjonalnie — przyda się w razie problemów z połączeniem</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label class="form-label">Krótka notatka</label>
+              <textarea class="form-textarea" id="f-note" placeholder="Opisz w kilku zdaniach, o czym chcesz porozmawiać…"></textarea>
+              <span class="form-hint">Dzięki temu lepiej przygotuję się do rozmowy</span>
+            </div>
+
+            <button class="btn btn-primary btn-lg btn-full" type="submit" id="submit-btn">
+              Potwierdź rezerwację →
+            </button>
+
+            <p class="muted2 t-xs text-center" style="margin-top: 12px;">
+              Po kliknięciu wyślemy Ci email z potwierdzeniem i linkiem do Google Meet.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- STEP: success -->
+      <div id="success-section" class="hidden">
+        <div class="card">
+          <div class="success-box">
+            <div class="success-icon">✓</div>
+            <h2>Spotkanie zarezerwowane!</h2>
+            <div id="success-details"></div>
+            <a href="index.html" class="btn btn-outline" style="margin-top: 20px;">Wróć na stronę główną</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder when nothing selected yet -->
+      <div id="calendar-section" class="hidden"><!-- placeholder handled by app.js --></div>
+
+    </div>
+  </div>
+</main>
+
+<div id="toast-container"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
