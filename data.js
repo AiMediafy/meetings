@@ -4,22 +4,20 @@
 
 const CONFIG = {
   // ── TWOJE DANE ──────────────────────────
-  ownerName:  "Jerzy Niewiadowski  ",          // zmień na swoje imię
-  ownerRole:  "CEO @ Mediafy,  // np. "CEO @ MediafySpartaAI"
-  ownerEmail: "jerzy.niewiadowski@mediafy.com.pl",      // twój email
-  ownerInitials: "JN",               // inicjały do avatara
+  ownerName:     "Jerzy Niewiadowski",
+  ownerRole:     "CEO @ Mediafy",
+  ownerEmail:    "jerzy.niewiadowski@mediafy.com.pl",
+  ownerInitials: "JN",
 
   // ── OPIS SPOTKANIA ───────────────────────
   meetingTitle:    "Konsultacja 1:1",
-  meetingDuration: 45,               // minut
+  meetingDuration: 45,
   meetingDesc:     "Porozmawiajmy o Twoich potrzebach. Spotkanie online przez Google Meet.",
 
   // ── N8N WEBHOOK ──────────────────────────
-  // Wklej tutaj URL webhooka z n8n po jego skonfigurowaniu
   n8nWebhookUrl: "https://TWOJ-N8N.app.n8n.cloud/webhook/TWOJ-WEBHOOK-ID",
 
   // ── HASŁO ADMINA ─────────────────────────
-  // To jest hasło tymczasowe — docelowo użyj lepszego auth
   adminPassword: "meeting#420",
 
   // ── GODZINY PRACY ────────────────────────
@@ -30,16 +28,15 @@ const CONFIG = {
   ],
 
   // ── DOMYŚLNA LICZBA DNI DO PRZODU ────────
-  bookingWindowDays: 30,  // ile dni do przodu można zarezerwować
+  bookingWindowDays: 30,
 };
 
 // ═══════════════════════════════════════════
 //  STORAGE — zarządzanie danymi (localStorage)
-//  Docelowo zastąp przez Google Sheets API
 // ═══════════════════════════════════════════
 
 const Storage = {
-  EVENTS_KEY: "scheduler_events",
+  EVENTS_KEY:   "scheduler_events",
   BOOKINGS_KEY: "scheduler_bookings",
 
   getEvents() {
@@ -60,30 +57,25 @@ const Storage = {
     localStorage.setItem(this.BOOKINGS_KEY, JSON.stringify(bookings));
   },
 
-  // Dodaj nowe zdarzenie (fake lub real z admina)
   addEvent(ev) {
     const events = this.getEvents();
     events.push({ ...ev, id: Date.now() + Math.random() });
     this.saveEvents(events);
   },
 
-  // Usuń zdarzenie po id
   removeEvent(id) {
     const events = this.getEvents().filter(e => e.id !== id);
     this.saveEvents(events);
   },
 
-  // Pobierz eventy dla konkretnego dnia (format: YYYY-MM-DD)
   getEventsForDay(dateStr) {
     return this.getEvents().filter(e => e.date === dateStr);
   },
 
-  // Czy dany slot jest zajęty?
   isSlotTaken(dateStr, hour) {
     return this.getEvents().some(e => e.date === dateStr && e.hour === hour);
   },
 
-  // Zapisz nową rezerwację od klienta
   addBooking(booking) {
     const bookings = this.getBookings();
     const newBooking = {
@@ -95,15 +87,14 @@ const Storage = {
     bookings.push(newBooking);
     this.saveBookings(bookings);
 
-    // Automatycznie dodaj jako real event
     this.addEvent({
-      date: booking.date,
-      hour: booking.hour,
-      type: "real",
-      title: `${booking.firstName} ${booking.lastName}`,
-      email: booking.email,
-      phone: booking.phone,
-      note:  booking.note,
+      date:      booking.date,
+      hour:      booking.hour,
+      type:      "real",
+      title:     `${booking.firstName} ${booking.lastName}`,
+      email:     booking.email,
+      phone:     booking.phone,
+      note:      booking.note,
       bookingId: newBooking.id,
     });
 
@@ -116,7 +107,6 @@ const Storage = {
 // ═══════════════════════════════════════════
 
 const Helpers = {
-  // Format daty do wyświetlania
   formatDate(dateStr) {
     const d = new Date(dateStr + "T12:00:00");
     return d.toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -127,23 +117,19 @@ const Helpers = {
     return d.toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
   },
 
-  // Generuj string daty YYYY-MM-DD
   dateToStr(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   },
 
-  // Dzisiaj jako string
   today() {
     const d = new Date();
     return this.dateToStr(d.getFullYear(), d.getMonth(), d.getDate());
   },
 
-  // Czy data jest w przeszłości?
   isPast(dateStr) {
     return dateStr < this.today();
   },
 
-  // Czy slot jest dzisiaj i już minął?
   isHourPast(dateStr, hour) {
     if (dateStr > this.today()) return false;
     if (dateStr < this.today()) return true;
@@ -152,12 +138,10 @@ const Helpers = {
     return now.getHours() >= h;
   },
 
-  // Inicjały z imienia i nazwiska
   initials(firstName, lastName) {
     return `${(firstName || "?")[0]}${(lastName || "?")[0]}`.toUpperCase();
   },
 
-  // Toast
   toast(msg, type = "default", duration = 3000) {
     const container = document.getElementById("toast-container");
     if (!container) return;
@@ -168,21 +152,18 @@ const Helpers = {
     setTimeout(() => el.remove(), duration);
   },
 
-  // Walidacja email
   isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); },
-
-  // Walidacja telefonu (luźna)
   isPhone(v) { return v.replace(/[\s\-\+\(\)]/g, "").length >= 7; },
 };
 
 // ═══════════════════════════════════════════
-//  N8N — wysyłanie danych do webhooka
+//  N8N
 // ═══════════════════════════════════════════
 
 const N8N = {
   async send(payload) {
     if (!CONFIG.n8nWebhookUrl || CONFIG.n8nWebhookUrl.includes("TWOJ")) {
-      console.warn("N8N webhook nie skonfigurowany — dane nie zostaną wysłane");
+      console.warn("N8N webhook nie skonfigurowany");
       return { ok: false, mock: true };
     }
     try {
@@ -202,10 +183,10 @@ const N8N = {
     return this.send({
       event: "new_booking",
       ...booking,
-      meetingTitle: CONFIG.meetingTitle,
+      meetingTitle:    CONFIG.meetingTitle,
       meetingDuration: CONFIG.meetingDuration,
-      ownerName: CONFIG.ownerName,
-      ownerEmail: CONFIG.ownerEmail,
+      ownerName:       CONFIG.ownerName,
+      ownerEmail:      CONFIG.ownerEmail,
     });
   },
 };
