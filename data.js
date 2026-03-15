@@ -4,10 +4,10 @@
 
 const CONFIG = {
   // ── TWOJE DANE ──────────────────────────
-  ownerName:  "Twoje Imię",          // zmień na swoje imię
-  ownerRole:  "Twoja rola / firma",  // np. "CEO @ MediafySpartaAI"
-  ownerEmail: "twoj@email.com",      // twój email
-  ownerInitials: "TI",               // inicjały do avatara
+  ownerName:  "Jerzy Niewiadowski  ",          // zmień na swoje imię
+  ownerRole:  "CEO @ Mediafy,  // np. "CEO @ MediafySpartaAI"
+  ownerEmail: "jerzy.niewiadowski@mediafy.com.pl",      // twój email
+  ownerInitials: "JN",               // inicjały do avatara
 
   // ── OPIS SPOTKANIA ───────────────────────
   meetingTitle:    "Konsultacja 1:1",
@@ -20,7 +20,7 @@ const CONFIG = {
 
   // ── HASŁO ADMINA ─────────────────────────
   // To jest hasło tymczasowe — docelowo użyj lepszego auth
-  adminPassword: "zmien-to-haslo-2024",
+  adminPassword: "meeting#420",
 
   // ── GODZINY PRACY ────────────────────────
   workHours: [
