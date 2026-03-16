@@ -9,6 +9,127 @@
 <link rel="stylesheet" href="style.css" />
 <style>
   .hidden { display: none !important; }
+
+  /* ── GŁÓWNA KARTA ── */
+  .booking-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 860px;
+    margin: 40px auto;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 560px;
+  }
+
+  /* ── LEWA KOLUMNA — info o hoście ── */
+  .bc-left {
+    border-right: 1px solid var(--border);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .bc-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--blue-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: var(--blue-dark);
+    margin-bottom: 14px;
+  }
+  .bc-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .bc-role { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
+  .bc-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .bc-meta { display: flex; flex-direction: column; gap: 10px; }
+  .bc-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-2);
+  }
+  .bc-meta-item svg { color: var(--blue); flex-shrink: 0; }
+
+  /* ── PRAWA KOLUMNA — kroki ── */
+  .bc-right {
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+  }
+  .bc-step-title {
+    font-size: 15px; font-weight: 600; margin-bottom: 4px;
+  }
+  .bc-step-sub {
+    font-size: 13px; color: var(--text-2); margin-bottom: 20px;
+  }
+
+  /* ── KALENDARZ w prawej kolumnie ── */
+  .bc-cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .bc-cal-title { font-size: 15px; font-weight: 600; }
+
+  /* ── SLOTY ── */
+  .bc-slots { display: flex; flex-direction: column; gap: 6px; }
+  .bc-slot {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all .15s;
+    background: var(--white);
+  }
+  .bc-slot:hover {
+    border-color: var(--blue);
+    background: var(--blue-light);
+  }
+  .bc-slot-time {
+    font-size: 13px; font-weight: 600; color: var(--text-2);
+    width: 44px; flex-shrink: 0;
+  }
+  .bc-slot-label { font-size: 13px; color: var(--text); flex: 1; }
+  .bc-slot-arrow { font-size: 14px; color: var(--text-3); opacity: 0; transition: opacity .15s; }
+  .bc-slot:hover .bc-slot-arrow { opacity: 1; color: var(--blue); }
+  .bc-slot.taken {
+    background: var(--bg); border-color: var(--border);
+    cursor: default;
+  }
+  .bc-slot.taken .bc-slot-label { color: var(--text-3); }
+  .bc-slot.taken:hover { border-color: var(--border); background: var(--bg); }
+
+  /* ── BACK BUTTON ── */
+  .bc-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-2); font-weight: 500;
+    background: none; border: none; cursor: pointer;
+    padding: 0; margin-bottom: 16px;
+    transition: color .15s;
+  }
+  .bc-back:hover { color: var(--blue); }
+
+  /* ── SUKCES ── */
+  .bc-success {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+    flex: 1; padding: 20px;
+  }
+  .bc-success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 20px; color: var(--green);
+  }
+  .bc-success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .bc-success p  { font-size: 14px; color: var(--text-2); margin-bottom: 6px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .booking-card { grid-template-columns: 1fr; max-width: 100%; margin: 0; border-radius: 0; }
+    .bc-left { border-right: none; border-bottom: 1px solid var(--border); padding: 24px 20px; }
+    .bc-right { padding: 24px 20px; }
+  }
 </style>
 </head>
 <body>
@@ -20,126 +141,106 @@
   </div>
 </nav>
 
-<main style="padding: 40px 16px; max-width: 960px; margin: 0 auto;">
+<main style="padding: 24px 16px 60px; min-height: calc(100vh - 60px); display: flex; align-items: flex-start; justify-content: center;">
 
-  <div style="display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start;">
+  <div class="booking-card">
 
-    <!-- LEFT: Host info & calendar -->
-    <div>
-      <!-- Host info -->
-      <div class="booking-panel" style="margin-bottom: 16px;">
-        <div class="host-info">
-          <div class="avatar" id="host-initials">TI</div>
-          <div>
-            <div class="host-name" id="host-name">Ładowanie…</div>
-            <div class="host-role" id="host-role"></div>
-          </div>
-        </div>
-        <div class="meeting-chip">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    <!-- ── LEWA: info o hoście (zawsze widoczna) ── -->
+    <div class="bc-left">
+      <div class="bc-avatar" id="host-initials">JN</div>
+      <div class="bc-name"  id="host-name">Ładowanie…</div>
+      <div class="bc-role"  id="host-role"></div>
+      <div class="bc-divider"></div>
+      <div class="bc-meta">
+        <div class="bc-meta-item">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           <span id="meeting-duration"></span>
         </div>
-        <div class="meeting-chip">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+        <div class="bc-meta-item">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
           <span id="meeting-title"></span>
         </div>
-      </div>
-
-      <!-- Calendar -->
-      <div class="card card-pad" id="calendar-section">
-        <div class="cal-wrap">
-          <div class="cal-header">
-            <button class="cal-nav" id="cal-prev">‹</button>
-            <span class="cal-title" id="cal-month-label"></span>
-            <button class="cal-nav" id="cal-next">›</button>
-          </div>
-          <div class="cal-grid" id="cal-grid"></div>
+        <div class="bc-meta-item">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+          <span>Google Meet</span>
         </div>
-        <p class="muted2 t-xs" style="margin-top: 12px; text-align: center;">Kliknij dzień aby wybrać godzinę</p>
       </div>
     </div>
 
-    <!-- RIGHT: Steps -->
-    <div>
+    <!-- ── PRAWA: kroki ── -->
+    <div class="bc-right">
 
-      <!-- STEP: choose time -->
+      <!-- KROK 1: kalendarz -->
+      <div id="calendar-section">
+        <div class="bc-step-title">Wybierz datę</div>
+        <div class="bc-step-sub">Zaznacz dzień, aby zobaczyć dostępne godziny</div>
+
+        <div class="bc-cal-header">
+          <button class="cal-nav" id="cal-prev">‹</button>
+          <span class="bc-cal-title" id="cal-month-label"></span>
+          <button class="cal-nav" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <!-- KROK 2: godziny -->
       <div id="time-section" style="display:none">
-        <div class="flex items-center gap-3 mb-4">
-          <button class="btn btn-ghost btn-sm" onclick="App.goBack()">← Wróć</button>
-          <div>
-            <div class="fw-6 t-lg" id="slots-date-label"></div>
-            <div class="muted t-sm">Wybierz godzinę spotkania</div>
-          </div>
-        </div>
-        <div class="card card-pad" id="slots-container"></div>
+        <button class="bc-back" onclick="App.goBack()">← Wróć</button>
+        <div class="bc-step-title" id="slots-date-label"></div>
+        <div class="bc-step-sub">Wybierz godzinę spotkania</div>
+        <div class="bc-slots" id="slots-container"></div>
       </div>
 
-      <!-- STEP: booking form -->
+      <!-- KROK 3: formularz -->
       <div id="form-section" style="display:none">
-        <div class="flex items-center gap-3 mb-4">
-          <button class="btn btn-ghost btn-sm" onclick="App.goBack()">← Wróć</button>
-          <div>
-            <div class="fw-6 t-lg">Uzupełnij dane</div>
-            <div class="muted t-sm">Wyślemy potwierdzenie na Twój email</div>
+        <button class="bc-back" onclick="App.goBack()">← Wróć</button>
+        <div class="bc-step-title">Uzupełnij dane</div>
+        <div class="bc-step-sub">Wyślemy potwierdzenie na Twój email</div>
+
+        <div id="form-summary"></div>
+
+        <form onsubmit="App.submitBooking(event)" novalidate style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Imię <span class="req">*</span></label>
+              <input class="form-input" id="f-firstname" placeholder="Jan" autocomplete="given-name" />
+              <span class="form-error hidden" id="err-firstname"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nazwisko <span class="req">*</span></label>
+              <input class="form-input" id="f-lastname" placeholder="Kowalski" autocomplete="family-name" />
+              <span class="form-error hidden" id="err-lastname"></span>
+            </div>
           </div>
-        </div>
-
-        <div class="card card-pad">
-          <div id="form-summary"></div>
-
-          <form onsubmit="App.submitBooking(event)" novalidate>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-              <div class="form-group">
-                <label class="form-label">Imię <span class="req">*</span></label>
-                <input class="form-input" id="f-firstname" placeholder="Jan" autocomplete="given-name" />
-                <span class="form-error hidden" id="err-firstname"></span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Nazwisko <span class="req">*</span></label>
-                <input class="form-input" id="f-lastname" placeholder="Kowalski" autocomplete="family-name" />
-                <span class="form-error hidden" id="err-lastname"></span>
-              </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 14px;">
-              <label class="form-label">Email <span class="req">*</span></label>
-              <input class="form-input" id="f-email" type="email" placeholder="jan@firma.pl" autocomplete="email" />
-              <span class="form-error hidden" id="err-email"></span>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 14px;">
-              <label class="form-label">Numer telefonu</label>
-              <input class="form-input" id="f-phone" type="tel" placeholder="+48 500 000 000" autocomplete="tel" />
-              <span class="form-error hidden" id="err-phone"></span>
-              <span class="form-hint">Opcjonalnie — przyda się w razie problemów z połączeniem</span>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 20px;">
-              <label class="form-label">Krótka notatka</label>
-              <textarea class="form-textarea" id="f-note" placeholder="Opisz w kilku zdaniach, o czym chcesz porozmawiać…"></textarea>
-              <span class="form-hint">Dzięki temu lepiej przygotuję się do rozmowy</span>
-            </div>
-
-            <button class="btn btn-primary btn-lg btn-full" type="submit" id="submit-btn">
-              Potwierdź rezerwację →
-            </button>
-
-            <p class="muted2 t-xs text-center" style="margin-top: 12px;">
-              Po kliknięciu wyślemy Ci email z potwierdzeniem i linkiem do Google Meet.
-            </p>
-          </form>
-        </div>
+          <div class="form-group">
+            <label class="form-label">Email <span class="req">*</span></label>
+            <input class="form-input" id="f-email" type="email" placeholder="jan@firma.pl" autocomplete="email" />
+            <span class="form-error hidden" id="err-email"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Numer telefonu</label>
+            <input class="form-input" id="f-phone" type="tel" placeholder="+48 500 000 000" autocomplete="tel" />
+            <span class="form-error hidden" id="err-phone"></span>
+            <span class="form-hint">Opcjonalnie</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Krótka notatka</label>
+            <textarea class="form-textarea" id="f-note" placeholder="O czym chcesz porozmawiać?"></textarea>
+          </div>
+          <button class="btn btn-primary btn-lg btn-full" type="submit" id="submit-btn">
+            Potwierdź rezerwację →
+          </button>
+          <p class="muted2 t-xs text-center">Wyślemy email z potwierdzeniem i linkiem do Google Meet.</p>
+        </form>
       </div>
 
-      <!-- STEP: success -->
+      <!-- KROK 4: sukces -->
       <div id="success-section" style="display:none">
-        <div class="card">
-          <div class="success-box">
-            <div class="success-icon">✓</div>
-            <h2>Spotkanie zarezerwowane!</h2>
-            <div id="success-details"></div>
-            <a href="index.html" class="btn btn-outline" style="margin-top: 20px;">Wróć na stronę główną</a>
-          </div>
+        <div class="bc-success">
+          <div class="bc-success-icon">✓</div>
+          <h2>Spotkanie zarezerwowane!</h2>
+          <div id="success-details"></div>
+          <a href="index.html" class="btn btn-outline" style="margin-top:20px">Wróć na stronę główną</a>
         </div>
       </div>
 
