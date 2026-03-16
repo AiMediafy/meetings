@@ -173,6 +173,19 @@
   #panel-success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
   #panel-success p  { font-size: 14px; color: var(--text-2); margin-bottom: 4px; }
 
+  /* ── DURATION BUTTONS ── */
+  .dur-btn {
+    padding: 9px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px; font-weight: 500;
+    background: var(--white); color: var(--text);
+    cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  .dur-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .dur-btn.active { border-color: var(--blue); background: var(--blue); color: white; }
+
   /* ── BACK ── */
   .bc-back {
     display: inline-flex; align-items: center; gap: 5px;
@@ -319,47 +332,67 @@
         </div>
       </div>
 
-      <!-- PANEL 3: formularz -->
-      <div id="panel-form">
+      <!-- PANEL 3a: forma spotkania -->
+      <div id="panel-meetingtype">
         <button class="bc-back" onclick="App.goBack()">← Wróć</button>
-        <div class="bc-step-title">Uzupełnij dane</div>
+        <div class="bc-step-title">Forma spotkania</div>
+        <div class="bc-step-sub">Jak chcesz się spotkać?</div>
+
+        <div class="bc-summary" style="margin-bottom:24px">
+          <div style="font-size:20px">📅</div>
+          <div>
+            <div class="bc-summary-date" id="summary-date"></div>
+            <div class="bc-summary-time" id="summary-time"></div>
+          </div>
+        </div>
+
+        <!-- Czas trwania -->
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label" style="font-size:14px;margin-bottom:10px">Czas trwania spotkania</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap" id="duration-btns">
+            <button type="button" class="dur-btn active" onclick="App.setDuration(30)" data-dur="30">30 min</button>
+            <button type="button" class="dur-btn" onclick="App.setDuration(45)" data-dur="45">45 min</button>
+            <button type="button" class="dur-btn" onclick="App.setDuration(60)" data-dur="60">60 min</button>
+            <button type="button" class="dur-btn" onclick="App.setDuration(90)" data-dur="90">90 min</button>
+          </div>
+        </div>
+
+        <!-- Typ spotkania -->
+        <div class="form-group" style="margin-bottom:24px">
+          <label class="form-label" style="font-size:14px;margin-bottom:10px">Miejsce spotkania</label>
+          <div class="meeting-type-grid">
+            <button type="button" class="meeting-type-btn active" id="type-online" onclick="App.setMeetingType('online')">
+              <span class="mt-icon">💻</span>
+              <span class="mt-label">Google Meet</span>
+              <span class="mt-sub">Link wyślemy na email</span>
+            </button>
+            <button type="button" class="meeting-type-btn" id="type-inperson" onclick="App.setMeetingType('inperson')">
+              <span class="mt-icon">📍</span>
+              <span class="mt-label">Na żywo</span>
+              <span class="mt-sub">U Ciebie lub wybrane miejsce</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Miejsce (tylko na żywo) -->
+        <div class="form-group hidden" id="location-group" style="margin-bottom:24px">
+          <label class="form-label">Miejsce spotkania</label>
+          <input class="form-input" id="f-location" placeholder="np. Starbucks Rondo Daszyńskiego, Warszawa" oninput="App.updateMeta()" />
+          <span class="form-hint">Podaj adres lub nazwę miejsca</span>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-full" type="button" onclick="App.goToDetails()">
+          Dalej →
+        </button>
+      </div>
+
+      <!-- PANEL 3b: dane osobowe -->
+      <div id="panel-form" style="display:none">
+        <button class="bc-back" onclick="App.goBackToMeetingType()">← Wróć</button>
+        <div class="bc-step-title">Twoje dane</div>
         <div class="bc-step-sub">Wyślemy potwierdzenie na Twój email</div>
 
         <div class="bc-form">
-          <!-- Podsumowanie -->
-          <div class="bc-summary">
-            <div style="font-size:20px">📅</div>
-            <div>
-              <div class="bc-summary-date" id="summary-date"></div>
-              <div class="bc-summary-time" id="summary-time"></div>
-            </div>
-          </div>
-
-          <!-- Typ spotkania -->
-          <div class="form-group">
-            <label class="form-label">Forma spotkania</label>
-            <div class="meeting-type-grid">
-              <button type="button" class="meeting-type-btn active" id="type-online" onclick="App.setMeetingType('online')">
-                <span class="mt-icon">💻</span>
-                <span class="mt-label">Google Meet</span>
-                <span class="mt-sub">Link wyślemy na email</span>
-              </button>
-              <button type="button" class="meeting-type-btn" id="type-inperson" onclick="App.setMeetingType('inperson')">
-                <span class="mt-icon">📍</span>
-                <span class="mt-label">Na żywo</span>
-                <span class="mt-sub">U Ciebie lub wybrane miejsce</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Miejsce -->
-          <div class="form-group hidden" id="location-group">
-            <label class="form-label">Miejsce spotkania</label>
-            <input class="form-input" id="f-location" placeholder="np. Starbucks Rondo Daszyńskiego, Warszawa" oninput="App.updateMeta()" />
-            <span class="form-hint">Podaj adres lub nazwę miejsca</span>
-          </div>
-
-          <!-- Dane główne -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="form-group">
               <label class="form-label">Imię <span class="req">*</span></label>
@@ -383,7 +416,6 @@
             <span class="form-error hidden" id="err-phone"></span>
           </div>
 
-          <!-- Goście -->
           <div id="guests-container"></div>
           <button type="button" onclick="App.addGuest()"
             style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);background:none;border:1.5px dashed var(--blue-mid);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:all .15s;font-family:inherit;font-weight:500;width:100%">
