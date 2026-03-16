@@ -9,15 +9,21 @@
 <link rel="stylesheet" href="style.css" />
 <style>
   .hidden { display: none !important; }
-  body { background: #f1f5f9; }
+  html, body { height: 100%; overflow: hidden; background: #f1f5f9; }
+
+  /* ── KOMPAKTOWY KALENDARZ — zawsze mieści się w oknie ── */
+  .cal-day      { height: 30px !important; font-size: 12px !important; }
+  .cal-day-name { font-size: 10px !important; padding: 2px 0 6px !important; }
+  .cal-grid     { gap: 1px !important; }
 
   /* ── WRAPPER ── */
   .booking-wrap {
-    min-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 32px 16px;
+    padding: 20px 16px;
+    overflow: hidden;
   }
 
   /* ── GŁÓWNA KARTA ── */
@@ -28,7 +34,8 @@
     box-shadow: 0 8px 40px rgba(0,0,0,.09);
     width: 100%;
     max-width: 1000px;
-    height: 620px;
+    height: 100%;
+    max-height: 680px;
     display: grid;
     grid-template-columns: 260px 1fr;
     overflow: hidden;
@@ -76,9 +83,9 @@
   #panel-calendar {
     display: flex;
     flex-direction: column;
-    padding: 36px 32px;
+    padding: 28px 28px;
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   /* ── PANEL: krok 2 — kalendarz + godziny obok siebie ── */
@@ -93,12 +100,12 @@
     height: 100%;
   }
   .pt-cal {
-    padding: 36px 28px;
+    padding: 28px 20px;
     border-right: 1px solid var(--border);
-    overflow-y: auto;
+    overflow: hidden;
   }
   .pt-slots {
-    padding: 36px 20px 36px 24px;
+    padding: 28px 16px 28px 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
