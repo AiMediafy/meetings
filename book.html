@@ -9,126 +9,218 @@
 <link rel="stylesheet" href="style.css" />
 <style>
   .hidden { display: none !important; }
+  body { background: #f1f5f9; }
+
+  /* ── WRAPPER ── */
+  .booking-wrap {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
 
   /* ── GŁÓWNA KARTA ── */
   .booking-card {
     background: var(--white);
     border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.09);
     width: 100%;
-    max-width: 860px;
-    margin: 40px auto;
-    overflow: hidden;
+    max-width: 1000px;
+    height: 620px;
     display: grid;
-    grid-template-columns: 280px 1fr;
-    min-height: 560px;
+    grid-template-columns: 260px 1fr;
+    overflow: hidden;
   }
 
-  /* ── LEWA KOLUMNA — info o hoście ── */
+  /* ══════════════════════════════
+     LEWA KOLUMNA — host info
+  ══════════════════════════════ */
   .bc-left {
     border-right: 1px solid var(--border);
-    padding: 32px 28px;
+    padding: 36px 24px;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    overflow-y: auto;
   }
   .bc-avatar {
     width: 52px; height: 52px; border-radius: 50%;
     background: var(--blue-light);
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; font-weight: 700; color: var(--blue-dark);
-    margin-bottom: 14px;
+    margin-bottom: 12px; flex-shrink: 0;
   }
-  .bc-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .bc-name { font-size: 18px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
   .bc-role { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
-  .bc-divider { height: 1px; background: var(--border); margin: 16px 0; }
-  .bc-meta { display: flex; flex-direction: column; gap: 10px; }
-  .bc-meta-item {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 13px; color: var(--text-2);
-  }
-  .bc-meta-item svg { color: var(--blue); flex-shrink: 0; }
+  .bc-divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
 
-  /* ── PRAWA KOLUMNA — kroki ── */
+  .bc-meta { display: flex; flex-direction: column; gap: 11px; }
+  .bc-meta-item {
+    display: flex; align-items: flex-start; gap: 9px;
+    font-size: 13px; color: var(--text-2); line-height: 1.4;
+  }
+  .bc-meta-item svg { color: var(--text-3); flex-shrink: 0; margin-top: 1px; }
+
+  /* ══════════════════════════════
+     PRAWA KOLUMNA — 3 panele
+  ══════════════════════════════ */
   .bc-right {
-    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── PANEL: krok 1 — sam kalendarz ── */
+  #panel-calendar {
+    display: flex;
+    flex-direction: column;
+    padding: 36px 32px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* ── PANEL: krok 2 — kalendarz + godziny obok siebie ── */
+  #panel-time {
+    display: none;
+    height: 100%;
+    overflow: hidden;
+  }
+  .panel-time-inner {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    height: 100%;
+  }
+  .pt-cal {
+    padding: 36px 28px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+  .pt-slots {
+    padding: 36px 20px 36px 24px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
   }
-  .bc-step-title {
-    font-size: 15px; font-weight: 600; margin-bottom: 4px;
+  .pt-slots-date {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    margin-bottom: 16px; flex-shrink: 0;
   }
-  .bc-step-sub {
-    font-size: 13px; color: var(--text-2); margin-bottom: 20px;
+  .pt-slots-list { display: flex; flex-direction: column; gap: 8px; }
+  .pt-slot {
+    display: flex; align-items: center; justify-content: center;
+    padding: 11px 16px;
+    border: 1.5px solid var(--blue-mid);
+    border-radius: var(--radius);
+    cursor: pointer; transition: all .15s;
+    background: var(--white);
+    font-size: 14px; font-weight: 600; color: var(--blue);
+  }
+  .pt-slot:hover { background: var(--blue); color: white; border-color: var(--blue); }
+  .pt-slot.taken {
+    border-color: var(--border); color: var(--text-3);
+    background: var(--bg); cursor: default; font-weight: 400;
+  }
+  .pt-slot.taken:hover { background: var(--bg); color: var(--text-3); border-color: var(--border); }
+
+  /* ── PANEL: krok 3 — formularz ── */
+  #panel-form {
+    display: none;
+    padding: 36px 32px;
+    overflow-y: auto;
+    height: 100%;
   }
 
-  /* ── KALENDARZ w prawej kolumnie ── */
+  /* ── PANEL: sukces ── */
+  #panel-success {
+    display: none;
+    padding: 36px 32px;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  .bc-success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin: 0 auto 20px; color: var(--green);
+  }
+  #panel-success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  #panel-success p  { font-size: 14px; color: var(--text-2); margin-bottom: 4px; }
+
+  /* ── BACK ── */
+  .bc-back {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; color: var(--text-2); font-weight: 500;
+    background: none; border: none; cursor: pointer; padding: 0;
+    margin-bottom: 16px; transition: color .15s; flex-shrink: 0;
+  }
+  .bc-back:hover { color: var(--blue); }
+
+  /* ── STEP TITLE ── */
+  .bc-step-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+  .bc-step-sub   { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
+
+  /* ── KALENDARZ (wspólne style) ── */
   .bc-cal-header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 16px;
   }
   .bc-cal-title { font-size: 15px; font-weight: 600; }
 
-  /* ── SLOTY ── */
-  .bc-slots { display: flex; flex-direction: column; gap: 6px; }
-  .bc-slot {
+  /* ── FORMULARZ ── */
+  .bc-form { display: flex; flex-direction: column; gap: 12px; }
+  .bc-summary {
     display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all .15s;
-    background: var(--white);
+    background: var(--blue-light); border: 1px solid var(--blue-mid);
+    border-radius: var(--radius); padding: 12px 14px;
   }
-  .bc-slot:hover {
-    border-color: var(--blue);
-    background: var(--blue-light);
-  }
-  .bc-slot-time {
-    font-size: 13px; font-weight: 600; color: var(--text-2);
-    width: 44px; flex-shrink: 0;
-  }
-  .bc-slot-label { font-size: 13px; color: var(--text); flex: 1; }
-  .bc-slot-arrow { font-size: 14px; color: var(--text-3); opacity: 0; transition: opacity .15s; }
-  .bc-slot:hover .bc-slot-arrow { opacity: 1; color: var(--blue); }
-  .bc-slot.taken {
-    background: var(--bg); border-color: var(--border);
-    cursor: default;
-  }
-  .bc-slot.taken .bc-slot-label { color: var(--text-3); }
-  .bc-slot.taken:hover { border-color: var(--border); background: var(--bg); }
+  .bc-summary-date { font-size: 14px; font-weight: 600; color: var(--text); }
+  .bc-summary-time { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 
-  /* ── BACK BUTTON ── */
-  .bc-back {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--text-2); font-weight: 500;
+  /* Typ spotkania */
+  .meeting-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .meeting-type-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 8px; border: 1.5px solid var(--border);
+    border-radius: var(--radius); cursor: pointer; transition: all .15s;
+    background: var(--white); font-family: inherit;
+  }
+  .meeting-type-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+  .meeting-type-btn.active { border-color: var(--blue); background: var(--blue-light); }
+  .mt-icon  { font-size: 18px; }
+  .mt-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .mt-sub   { font-size: 11px; color: var(--text-3); text-align: center; line-height: 1.3; }
+  .meeting-type-btn.active .mt-label { color: var(--blue-dark); }
+
+  /* Goście */
+  .guest-row {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .guest-row-header { display: flex; justify-content: space-between; align-items: center; }
+  .guest-row-title  { font-size: 13px; font-weight: 600; }
+  .btn-remove-guest {
     background: none; border: none; cursor: pointer;
-    padding: 0; margin-bottom: 16px;
-    transition: color .15s;
+    font-size: 20px; color: var(--text-3); line-height: 1;
+    padding: 0 4px; transition: color .15s;
   }
-  .bc-back:hover { color: var(--blue); }
+  .btn-remove-guest:hover { color: var(--red); }
 
-  /* ── SUKCES ── */
-  .bc-success {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center;
-    flex: 1; padding: 20px;
-  }
-  .bc-success-icon {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; margin-bottom: 20px; color: var(--green);
-  }
-  .bc-success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .bc-success p  { font-size: 14px; color: var(--text-2); margin-bottom: 6px; }
+  /* ── LEFT META (od kroku form) ── */
+  #bc-meta-box { margin-top: 8px; }
 
   /* ── RESPONSIVE ── */
-  @media (max-width: 680px) {
-    .booking-card { grid-template-columns: 1fr; max-width: 100%; margin: 0; border-radius: 0; }
+  @media (max-width: 760px) {
+    .booking-card { grid-template-columns: 1fr; height: auto; }
     .bc-left { border-right: none; border-bottom: 1px solid var(--border); padding: 24px 20px; }
-    .bc-right { padding: 24px 20px; }
+    .panel-time-inner { grid-template-columns: 1fr; }
+    .pt-cal { border-right: none; border-bottom: 1px solid var(--border); }
+    #panel-calendar, #panel-form, #panel-success { padding: 24px 20px; }
   }
 </style>
 </head>
@@ -141,66 +233,112 @@
   </div>
 </nav>
 
-<main style="padding: 24px 16px 60px; min-height: calc(100vh - 60px); display: flex; align-items: flex-start; justify-content: center;">
-
+<div class="booking-wrap">
   <div class="booking-card">
 
-    <!-- ── LEWA: info o hoście (zawsze widoczna) ── -->
+    <!-- ══ LEWA: host info ══ -->
     <div class="bc-left">
       <div class="bc-avatar" id="host-initials">JN</div>
-      <div class="bc-name"  id="host-name">Ładowanie…</div>
-      <div class="bc-role"  id="host-role"></div>
+      <div class="bc-name" id="host-name">Ładowanie…</div>
+      <div class="bc-role" id="host-role"></div>
       <div class="bc-divider"></div>
-      <div class="bc-meta">
+      <div class="bc-meta" id="bc-meta-box">
         <div class="bc-meta-item">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span id="meeting-duration"></span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="meta-duration">45 min</span>
         </div>
-        <div class="bc-meta-item">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
-          <span id="meeting-title"></span>
+        <div class="bc-meta-item" id="meta-type-row">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+          <span id="meta-type-label">Google Meet</span>
         </div>
-        <div class="bc-meta-item">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          <span>Google Meet</span>
+        <div class="bc-meta-item hidden" id="meta-location-row">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="meta-location-label"></span>
+        </div>
+        <div class="bc-meta-item hidden" id="meta-guests-row">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          <span id="meta-guests-label"></span>
         </div>
       </div>
     </div>
 
-    <!-- ── PRAWA: kroki ── -->
+    <!-- ══ PRAWA: panele ══ -->
     <div class="bc-right">
 
-      <!-- KROK 1: kalendarz -->
-      <div id="calendar-section">
+      <!-- PANEL 1: tylko kalendarz -->
+      <div id="panel-calendar">
         <div class="bc-step-title">Wybierz datę</div>
         <div class="bc-step-sub">Zaznacz dzień, aby zobaczyć dostępne godziny</div>
-
         <div class="bc-cal-header">
-          <button class="cal-nav" id="cal-prev">‹</button>
-          <span class="bc-cal-title" id="cal-month-label"></span>
-          <button class="cal-nav" id="cal-next">›</button>
+          <button class="cal-nav" id="cal-prev-1">‹</button>
+          <span class="bc-cal-title" id="cal-month-1"></span>
+          <button class="cal-nav" id="cal-next-1">›</button>
         </div>
-        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-grid" id="cal-grid-1"></div>
       </div>
 
-      <!-- KROK 2: godziny -->
-      <div id="time-section" style="display:none">
-        <button class="bc-back" onclick="App.goBack()">← Wróć</button>
-        <div class="bc-step-title" id="slots-date-label"></div>
-        <div class="bc-step-sub">Wybierz godzinę spotkania</div>
-        <div class="bc-slots" id="slots-container"></div>
+      <!-- PANEL 2: kalendarz + godziny -->
+      <div id="panel-time">
+        <div class="panel-time-inner">
+          <!-- mini kalendarz -->
+          <div class="pt-cal">
+            <div class="bc-cal-header">
+              <button class="cal-nav" id="cal-prev-2">‹</button>
+              <span class="bc-cal-title" id="cal-month-2"></span>
+              <button class="cal-nav" id="cal-next-2">›</button>
+            </div>
+            <div class="cal-grid" id="cal-grid-2"></div>
+          </div>
+          <!-- sloty -->
+          <div class="pt-slots">
+            <div class="pt-slots-date" id="slots-date-label"></div>
+            <div class="pt-slots-list" id="slots-container"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- KROK 3: formularz -->
-      <div id="form-section" style="display:none">
+      <!-- PANEL 3: formularz -->
+      <div id="panel-form">
         <button class="bc-back" onclick="App.goBack()">← Wróć</button>
         <div class="bc-step-title">Uzupełnij dane</div>
         <div class="bc-step-sub">Wyślemy potwierdzenie na Twój email</div>
 
-        <div id="form-summary"></div>
+        <div class="bc-form">
+          <!-- Podsumowanie -->
+          <div class="bc-summary">
+            <div style="font-size:20px">📅</div>
+            <div>
+              <div class="bc-summary-date" id="summary-date"></div>
+              <div class="bc-summary-time" id="summary-time"></div>
+            </div>
+          </div>
 
-        <form onsubmit="App.submitBooking(event)" novalidate style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <!-- Typ spotkania -->
+          <div class="form-group">
+            <label class="form-label">Forma spotkania</label>
+            <div class="meeting-type-grid">
+              <button type="button" class="meeting-type-btn active" id="type-online" onclick="App.setMeetingType('online')">
+                <span class="mt-icon">💻</span>
+                <span class="mt-label">Google Meet</span>
+                <span class="mt-sub">Link wyślemy na email</span>
+              </button>
+              <button type="button" class="meeting-type-btn" id="type-inperson" onclick="App.setMeetingType('inperson')">
+                <span class="mt-icon">📍</span>
+                <span class="mt-label">Na żywo</span>
+                <span class="mt-sub">U Ciebie lub wybrane miejsce</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Miejsce -->
+          <div class="form-group hidden" id="location-group">
+            <label class="form-label">Miejsce spotkania</label>
+            <input class="form-input" id="f-location" placeholder="np. Starbucks Rondo Daszyńskiego, Warszawa" oninput="App.updateMeta()" />
+            <span class="form-hint">Podaj adres lub nazwę miejsca</span>
+          </div>
+
+          <!-- Dane główne -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="form-group">
               <label class="form-label">Imię <span class="req">*</span></label>
               <input class="form-input" id="f-firstname" placeholder="Jan" autocomplete="given-name" />
@@ -221,24 +359,32 @@
             <label class="form-label">Numer telefonu</label>
             <input class="form-input" id="f-phone" type="tel" placeholder="+48 500 000 000" autocomplete="tel" />
             <span class="form-error hidden" id="err-phone"></span>
-            <span class="form-hint">Opcjonalnie</span>
           </div>
+
+          <!-- Goście -->
+          <div id="guests-container"></div>
+          <button type="button" onclick="App.addGuest()"
+            style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);background:none;border:1.5px dashed var(--blue-mid);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:all .15s;font-family:inherit;font-weight:500;width:100%">
+            + Dodaj drugą osobę ze swojej strony
+          </button>
+
           <div class="form-group">
             <label class="form-label">Krótka notatka</label>
             <textarea class="form-textarea" id="f-note" placeholder="O czym chcesz porozmawiać?"></textarea>
           </div>
-          <button class="btn btn-primary btn-lg btn-full" type="submit" id="submit-btn">
+
+          <button class="btn btn-primary btn-lg btn-full" type="button" id="submit-btn" onclick="App.submitBooking()">
             Potwierdź rezerwację →
           </button>
-          <p class="muted2 t-xs text-center">Wyślemy email z potwierdzeniem i linkiem do Google Meet.</p>
-        </form>
+          <p class="muted2 t-xs text-center">Wyślemy email z potwierdzeniem i wszystkimi szczegółami.</p>
+        </div>
       </div>
 
-      <!-- KROK 4: sukces -->
-      <div id="success-section" style="display:none">
-        <div class="bc-success">
+      <!-- PANEL 4: sukces -->
+      <div id="panel-success" style="display:none;display:flex">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%;height:100%">
           <div class="bc-success-icon">✓</div>
-          <h2>Spotkanie zarezerwowane!</h2>
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Spotkanie zarezerwowane!</h2>
           <div id="success-details"></div>
           <a href="index.html" class="btn btn-outline" style="margin-top:20px">Wróć na stronę główną</a>
         </div>
@@ -246,7 +392,7 @@
 
     </div>
   </div>
-</main>
+</div>
 
 <div id="toast-container"></div>
 <script src="data.js"></script>
