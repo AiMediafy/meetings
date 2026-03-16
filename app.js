@@ -8,8 +8,9 @@ const App = (() => {
     month:        new Date().getMonth(),
     selectedDate: null,
     selectedHour: null,
-    step:         "calendar",   // calendar | time | form | success
+    step:         "calendar",   // calendar | time | meetingtype | form | success
     meetingType:  "online",
+    duration:     30,
     guestCount:   0,
   };
 
@@ -19,10 +20,10 @@ const App = (() => {
     setText("host-name",     CONFIG.ownerName);
     setText("host-role",     CONFIG.ownerRole);
     setText("page-title",    "Umow spotkanie z " + CONFIG.ownerName);
-    setText("meta-duration", CONFIG.meetingDuration + " min");
+    setText("meta-duration", state.duration + " min");
     renderCal("cal-grid-1", "cal-month-1");
-    bindNavBtn("cal-prev-1", "cal-next-1", "cal-grid-1", "cal-month-1");
-    bindNavBtn("cal-prev-2", "cal-next-2", "cal-grid-2", "cal-month-2");
+    bindNavBtn("cal-prev-1", "cal-next-1");
+    bindNavBtn("cal-prev-2", "cal-next-2");
     showPanel("panel-calendar");
   }
 
@@ -36,24 +37,22 @@ const App = (() => {
                   "Lipiec","Sierpien","Wrzesien","Pazdziernik","Listopad","Grudzien"];
     if (label) label.textContent = months[state.month] + " " + state.year;
 
-    var todayStr = Helpers.today();
-    var maxDate  = new Date();
+    var todayStr    = Helpers.today();
+    var maxDate     = new Date();
     maxDate.setDate(maxDate.getDate() + CONFIG.bookingWindowDays);
-    var maxStr = Helpers.dateToStr(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
-
+    var maxStr      = Helpers.dateToStr(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
     var firstDay    = new Date(state.year, state.month, 1).getDay();
     var offset      = firstDay === 0 ? 6 : firstDay - 1;
     var daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
 
     var dayNames = ["Pn","Wt","Sr","Cz","Pt","So","Nd"];
     var html = dayNames.map(function(d) { return '<div class="cal-day-name">' + d + '</div>'; }).join("");
-
     for (var i = 0; i < offset; i++) html += '<div class="cal-day empty"></div>';
 
     for (var d = 1; d <= daysInMonth; d++) {
-      var ds   = Helpers.dateToStr(state.year, state.month, d);
-      var dow  = new Date(ds + "T12:00:00").getDay();
-      var past = ds < todayStr;
+      var ds      = Helpers.dateToStr(state.year, state.month, d);
+      var dow     = new Date(ds + "T12:00:00").getDay();
+      var past    = ds < todayStr;
       var future  = ds > maxStr;
       var weekend = (dow === 0 || dow === 6);
       var hasEv   = Storage.getEventsForDay(ds).length > 0;
@@ -72,7 +71,12 @@ const App = (() => {
     grid.innerHTML = html;
   }
 
-  function bindNavBtn(prevId, nextId, gridId, labelId) {
+  function renderBothCals() {
+    renderCal("cal-grid-1", "cal-month-1");
+    renderCal("cal-grid-2", "cal-month-2");
+  }
+
+  function bindNavBtn(prevId, nextId) {
     var prev = document.getElementById(prevId);
     var next = document.getElementById(nextId);
     if (prev) prev.onclick = function() {
@@ -87,12 +91,7 @@ const App = (() => {
     };
   }
 
-  function renderBothCals() {
-    renderCal("cal-grid-1", "cal-month-1");
-    renderCal("cal-grid-2", "cal-month-2");
-  }
-
-  // ── SELECT DATE ──────────────────────────
+  // ── KROK 1→2: wybór daty ──────────────────────────
   function selectDate(ds) {
     state.selectedDate = ds;
     state.selectedHour = null;
@@ -102,14 +101,12 @@ const App = (() => {
     showPanel("panel-time");
   }
 
-  // ── RENDER SLOTS ──────────────────────────
+  // ── KROK 2: sloty ──────────────────────────
   function renderSlots() {
     var lbl = document.getElementById("slots-date-label");
     if (lbl) lbl.textContent = Helpers.formatDate(state.selectedDate);
-
     var container = document.getElementById("slots-container");
     if (!container) return;
-
     var html = "";
     CONFIG.workHours.forEach(function(hour) {
       var taken = Storage.isSlotTaken(state.selectedDate, hour)
@@ -123,22 +120,32 @@ const App = (() => {
     container.innerHTML = html;
   }
 
-  // ── SELECT HOUR ──────────────────────────
+  // ── KROK 2→3a: wybór godziny ──────────────────────────
   function selectHour(hour) {
     state.selectedHour = hour;
-    state.step = "form";
-    state.guestCount = 0;
+    state.step = "meetingtype";
+    state.duration = 30;
 
-    // Podsumowanie
     setText("summary-date", Helpers.formatDate(state.selectedDate));
-    setText("summary-time", hour + " · " + CONFIG.meetingDuration + " min");
+    setText("summary-time", hour);
 
-    // Reset formularza
-    var gc = document.getElementById("guests-container");
-    if (gc) gc.innerHTML = "";
+    // Reset duration buttons
+    setDuration(30);
     setMeetingType("online");
 
-    showPanel("panel-form");
+    showPanel("panel-meetingtype");
+  }
+
+  // ── DURATION ──────────────────────────
+  function setDuration(mins) {
+    state.duration = mins;
+    setText("meta-duration", mins + " min");
+    document.querySelectorAll(".dur-btn").forEach(function(btn) {
+      btn.classList.toggle("active", parseInt(btn.dataset.dur) === mins);
+    });
+    // aktualizuj summary-time
+    var timeEl = document.getElementById("summary-time");
+    if (timeEl) timeEl.textContent = state.selectedHour + " · " + mins + " min";
   }
 
   // ── MEETING TYPE ──────────────────────────
@@ -151,7 +158,6 @@ const App = (() => {
     if (btnI) btnI.classList.toggle("active", type === "inperson");
     if (locG) locG.classList.toggle("hidden", type === "online");
 
-    // Meta
     var metaType = document.getElementById("meta-type-label");
     if (metaType) metaType.textContent = type === "online" ? "Google Meet" : "Spotkanie na zywo";
 
@@ -162,7 +168,7 @@ const App = (() => {
   }
 
   function updateMeta() {
-    var locInput = document.getElementById("f-location");
+    var locInput   = document.getElementById("f-location");
     var metaLocRow = document.getElementById("meta-location-row");
     var metaLocLbl = document.getElementById("meta-location-label");
     if (!locInput || !metaLocRow || !metaLocLbl) return;
@@ -172,6 +178,15 @@ const App = (() => {
     } else {
       metaLocRow.classList.add("hidden");
     }
+  }
+
+  // ── KROK 3a→3b: przejdź do danych ──────────────────────────
+  function goToDetails() {
+    state.step = "form";
+    var gc = document.getElementById("guests-container");
+    if (gc) gc.innerHTML = "";
+    state.guestCount = 0;
+    showPanel("panel-form");
   }
 
   // ── GUESTS ──────────────────────────────
@@ -221,18 +236,18 @@ const App = (() => {
 
   // ── SUBMIT ──────────────────────────────
   async function submitBooking() {
-    var fn    = document.getElementById("f-firstname");
-    var ln    = document.getElementById("f-lastname");
-    var em    = document.getElementById("f-email");
-    var ph    = document.getElementById("f-phone");
-    var nt    = document.getElementById("f-note");
-    var loc   = document.getElementById("f-location");
+    var fn  = document.getElementById("f-firstname");
+    var ln  = document.getElementById("f-lastname");
+    var em  = document.getElementById("f-email");
+    var ph  = document.getElementById("f-phone");
+    var nt  = document.getElementById("f-note");
+    var loc = document.getElementById("f-location");
 
     var valid = true;
     clearErrors();
-    if (!fn || !fn.value.trim())           { showError("err-firstname", "Podaj imie"); valid = false; }
-    if (!ln || !ln.value.trim())            { showError("err-lastname",  "Podaj nazwisko"); valid = false; }
-    if (!em || !Helpers.isEmail(em.value))  { showError("err-email", "Podaj poprawny email"); valid = false; }
+    if (!fn || !fn.value.trim())          { showError("err-firstname", "Podaj imie"); valid = false; }
+    if (!ln || !ln.value.trim())          { showError("err-lastname", "Podaj nazwisko"); valid = false; }
+    if (!em || !Helpers.isEmail(em.value)){ showError("err-email", "Podaj poprawny email"); valid = false; }
     if (ph && ph.value && !Helpers.isPhone(ph.value)) { showError("err-phone", "Niepoprawny numer"); valid = false; }
     if (!valid) return;
 
@@ -252,6 +267,7 @@ const App = (() => {
     var booking = {
       date:        state.selectedDate,
       hour:        state.selectedHour,
+      duration:    state.duration,
       meetingType: state.meetingType,
       location:    (loc && state.meetingType === "inperson") ? loc.value.trim() : "",
       firstName:   fn.value.trim(),
@@ -274,6 +290,7 @@ const App = (() => {
     showPanel("panel-success");
   }
 
+  // ── SUCCESS ──────────────────────────────
   function renderSuccess(booking) {
     var el = document.getElementById("success-details");
     if (!el) return;
@@ -291,36 +308,42 @@ const App = (() => {
       + 'Potwierdzenie wyslano na <strong>' + booking.email + '</strong></p>'
       + '<div style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius);padding:14px 16px;text-align:left">'
       + '<div style="font-size:14px;font-weight:600;margin-bottom:4px">' + CONFIG.meetingTitle + '</div>'
-      + '<div style="font-size:13px;color:var(--text-2)">' + Helpers.formatDate(booking.date) + ' · ' + booking.hour + ' · ' + CONFIG.meetingDuration + ' min</div>'
+      + '<div style="font-size:13px;color:var(--text-2)">' + Helpers.formatDate(booking.date) + ' · ' + booking.hour + ' · ' + booking.duration + ' min</div>'
       + '<div style="font-size:13px;color:var(--blue);margin-top:4px">' + typeLabel + '</div>'
       + guestsHtml + '</div>';
   }
 
-  // ── PANEL SHOW ──────────────────────────
+  // ── PANEL SWITCH ──────────────────────────
   function showPanel(id) {
-    ["panel-calendar","panel-time","panel-form","panel-success"].forEach(function(pid) {
+    ["panel-calendar","panel-time","panel-meetingtype","panel-form","panel-success"].forEach(function(pid) {
       var el = document.getElementById(pid);
-      if (el) el.style.display = "none";
+      if (!el) return;
+      el.style.display = "none";
     });
     var target = document.getElementById(id);
-    if (target) target.style.display = id === "panel-time" ? "block" : (id === "panel-success" ? "flex" : "flex");
-    if (target && id === "panel-time") target.style.display = "block";
-    if (target && id === "panel-calendar") { target.style.display = "flex"; target.style.flexDirection = "column"; }
-    if (target && id === "panel-form") { target.style.display = "block"; }
-    if (target && id === "panel-success") { target.style.display = "flex"; }
+    if (!target) return;
+    if (id === "panel-time")    { target.style.display = "block"; return; }
+    if (id === "panel-success") { target.style.display = "flex";  return; }
+    target.style.display = "flex";
+    target.style.flexDirection = "column";
   }
 
   // ── BACK ──────────────────────────────
   function goBack() {
-    if (state.step === "form") {
-      state.step = "time";
-      showPanel("panel-time");
-    } else if (state.step === "time") {
+    if (state.step === "time") {
       state.step = "calendar";
       state.selectedDate = null;
       renderBothCals();
       showPanel("panel-calendar");
+    } else if (state.step === "meetingtype") {
+      state.step = "time";
+      showPanel("panel-time");
     }
+  }
+
+  function goBackToMeetingType() {
+    state.step = "meetingtype";
+    showPanel("panel-meetingtype");
   }
 
   // ── UTILS ──────────────────────────────
@@ -339,12 +362,15 @@ const App = (() => {
     init: init,
     selectDate: selectDate,
     selectHour: selectHour,
-    submitBooking: submitBooking,
-    goBack: goBack,
+    setDuration: setDuration,
     setMeetingType: setMeetingType,
     updateMeta: updateMeta,
+    goToDetails: goToDetails,
     addGuest: addGuest,
     removeGuest: removeGuest,
+    submitBooking: submitBooking,
+    goBack: goBack,
+    goBackToMeetingType: goBackToMeetingType,
   };
 })();
 
