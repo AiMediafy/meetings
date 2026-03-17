@@ -1,20 +1,15 @@
-// ═══════════════════════════════════════════
-//  PUBLIC BOOKING PAGE — app.js
-// ═══════════════════════════════════════════
-
 const App = (() => {
   var state = {
     year:         new Date().getFullYear(),
     month:        new Date().getMonth(),
     selectedDate: null,
     selectedHour: null,
-    step:         "calendar",   // calendar | time | meetingtype | form | success
+    step:         "calendar",
     meetingType:  "online",
     duration:     30,
     guestCount:   0,
   };
 
-  // ── INIT ──────────────────────────────
   function init() {
     setText("host-initials", CONFIG.ownerInitials);
     setText("host-name",     CONFIG.ownerName);
@@ -27,7 +22,6 @@ const App = (() => {
     showPanel("panel-calendar");
   }
 
-  // ── RENDER CALENDAR ──────────────────────────
   function renderCal(gridId, labelId) {
     var grid  = document.getElementById(gridId);
     var label = document.getElementById(labelId);
@@ -61,11 +55,11 @@ const App = (() => {
       var cls = "cal-day";
       if (past || future || weekend) cls += " past";
       if (ds === todayStr) cls += " today";
-      if (sel)  cls += " selected";
+      if (sel)   cls += " selected";
       if (hasEv) cls += " has-events";
 
       var click = (!past && !future && !weekend)
-        ? 'onclick="App.selectDate(\'' + ds + '\')"' : "";
+        ? "onclick=\"App.selectDate('" + ds + "')\"" : "";
       html += '<div class="' + cls + '" ' + click + '>' + d + '</div>';
     }
     grid.innerHTML = html;
@@ -81,13 +75,11 @@ const App = (() => {
     var next = document.getElementById(nextId);
     if (prev) prev.onclick = function() {
       var now = new Date();
-      var newMonth = state.month - 1;
-      var newYear  = state.year;
-      if (newMonth < 0) { newMonth = 11; newYear--; }
-      // nie cofaj przed aktualnym miesiącem
-      if (newYear < now.getFullYear() || (newYear === now.getFullYear() && newMonth < now.getMonth())) return;
-      state.month = newMonth;
-      state.year  = newYear;
+      var nm = state.month - 1;
+      var ny = state.year;
+      if (nm < 0) { nm = 11; ny--; }
+      if (ny < now.getFullYear() || (ny === now.getFullYear() && nm < now.getMonth())) return;
+      state.month = nm; state.year = ny;
       renderBothCals();
     };
     if (next) next.onclick = function() {
@@ -97,7 +89,6 @@ const App = (() => {
     };
   }
 
-  // ── KROK 1→2: wybór daty ──────────────────────────
   function selectDate(ds) {
     state.selectedDate = ds;
     state.selectedHour = null;
@@ -107,7 +98,6 @@ const App = (() => {
     showPanel("panel-time");
   }
 
-  // ── KROK 2: sloty ──────────────────────────
   function renderSlots() {
     var lbl = document.getElementById("slots-date-label");
     if (lbl) lbl.textContent = Helpers.formatDate(state.selectedDate);
@@ -126,35 +116,27 @@ const App = (() => {
     container.innerHTML = html;
   }
 
-  // ── KROK 2→3a: wybór godziny ──────────────────────────
   function selectHour(hour) {
     state.selectedHour = hour;
     state.step = "meetingtype";
     state.duration = 30;
-
     setText("summary-date", Helpers.formatDate(state.selectedDate));
     setText("summary-time", hour);
-
-    // Reset duration buttons
     setDuration(30);
     setMeetingType("online");
-
     showPanel("panel-meetingtype");
   }
 
-  // ── DURATION ──────────────────────────
   function setDuration(mins) {
     state.duration = mins;
     setText("meta-duration", mins + " min");
     document.querySelectorAll(".dur-btn").forEach(function(btn) {
       btn.classList.toggle("active", parseInt(btn.dataset.dur) === mins);
     });
-    // aktualizuj summary-time
     var timeEl = document.getElementById("summary-time");
     if (timeEl) timeEl.textContent = state.selectedHour + " · " + mins + " min";
   }
 
-  // ── MEETING TYPE ──────────────────────────
   function setMeetingType(type) {
     state.meetingType = type;
     var btnO = document.getElementById("type-online");
@@ -163,10 +145,8 @@ const App = (() => {
     if (btnO) btnO.classList.toggle("active", type === "online");
     if (btnI) btnI.classList.toggle("active", type === "inperson");
     if (locG) locG.classList.toggle("hidden", type === "online");
-
     var metaType = document.getElementById("meta-type-label");
     if (metaType) metaType.textContent = type === "online" ? "Google Meet" : "Spotkanie na zywo";
-
     if (type === "online") {
       var metaLoc = document.getElementById("meta-location-row");
       if (metaLoc) metaLoc.classList.add("hidden");
@@ -186,26 +166,22 @@ const App = (() => {
     }
   }
 
-  // ── KROK 3a→3b: przejdź do danych ──────────────────────────
   function goToDetails() {
-    // Walidacja miejsca dla spotkania na zywo
     if (state.meetingType === "inperson") {
       var loc = document.getElementById("f-location");
       if (!loc || !loc.value.trim()) {
         if (loc) {
-          loc.style.borderColor = "var(--red)";
+          loc.style.borderColor = "#dc2626";
           loc.style.boxShadow = "0 0 0 3px rgba(220,38,38,.15)";
           loc.focus();
-          setTimeout(function() {
-            loc.style.borderColor = "";
-            loc.style.boxShadow = "";
-          }, 2500);
+          setTimeout(function() { loc.style.borderColor = ""; loc.style.boxShadow = ""; }, 2500);
         }
-        var hint = document.querySelector("#location-group .form-hint");
-        if (hint) { hint.textContent = "To pole jest wymagane!"; hint.style.color = "var(--red)"; }
-        setTimeout(function() {
-          if (hint) { hint.textContent = "Podaj adres lub nazwe miejsca"; hint.style.color = ""; }
-        }, 2500);
+        var hint = document.getElementById("location-hint");
+        if (hint) {
+          hint.textContent = "To pole jest wymagane!";
+          hint.style.color = "#dc2626";
+          setTimeout(function() { hint.textContent = "Wpisz gdzie sie spotkamy"; hint.style.color = ""; }, 2500);
+        }
         return;
       }
     }
@@ -216,7 +192,6 @@ const App = (() => {
     showPanel("panel-form");
   }
 
-  // ── GUESTS ──────────────────────────────
   function addGuest() {
     state.guestCount++;
     var idx = state.guestCount;
@@ -225,21 +200,23 @@ const App = (() => {
     var row = document.createElement("div");
     row.className = "guest-row";
     row.id = "guest-row-" + idx;
-    row.innerHTML =
-      '<div class="guest-row-header">'
-      + '<div class="guest-row-title">Partner biznesowy</div>'
-      + '<button class="btn-remove-guest" type="button" onclick="App.removeGuest(' + idx + ')">&times;</button>'
-      + '</div>'
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
-      + '<div class="form-group"><label class="form-label">Imie <span style='color:var(--red)'>*</span></label>'
-      + '<input class="form-input" id="g-fn-' + idx + '" placeholder="Anna" /></div>'
-      + '<div class="form-group"><label class="form-label">Nazwisko <span style='color:var(--red)'>*</span></label>'
-      + '<input class="form-input" id="g-ln-' + idx + '" placeholder="Kowalska" /></div>'
-      + '</div>'
-      + '<div class="form-group"><label class="form-label">Email <span style='color:var(--red)'>*</span></label>'
-      + '<input class="form-input" id="g-em-' + idx + '" type="email" placeholder="anna@firma.pl" /></div>'
-      + '<div class="form-group"><label class="form-label">Numer telefonu <span style='color:var(--red)'>*</span></label>'
-      + '<input class="form-input" id="g-ph-' + idx + '" type="tel" placeholder="+48 500 000 000" /></div>';
+
+    var html = '<div class="guest-row-header">';
+    html += '<div class="guest-row-title">Partner biznesowy</div>';
+    html += '<button class="btn-remove" type="button" onclick="App.removeGuest(' + idx + ')">&times;</button>';
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    html += '<div class="form-group"><label class="form-label">Imie <span style="color:#dc2626">*</span></label>';
+    html += '<input class="form-input" id="g-fn-' + idx + '" placeholder="Anna" /></div>';
+    html += '<div class="form-group"><label class="form-label">Nazwisko <span style="color:#dc2626">*</span></label>';
+    html += '<input class="form-input" id="g-ln-' + idx + '" placeholder="Kowalska" /></div>';
+    html += '</div>';
+    html += '<div class="form-group"><label class="form-label">Email <span style="color:#dc2626">*</span></label>';
+    html += '<input class="form-input" id="g-em-' + idx + '" type="email" placeholder="anna@firma.pl" /></div>';
+    html += '<div class="form-group"><label class="form-label">Telefon <span style="color:#dc2626">*</span></label>';
+    html += '<input class="form-input" id="g-ph-' + idx + '" type="tel" placeholder="+48 500 000 000" /></div>';
+
+    row.innerHTML = html;
     container.appendChild(row);
     updateGuestsMeta();
   }
@@ -263,7 +240,6 @@ const App = (() => {
     }
   }
 
-  // ── SUBMIT ──────────────────────────────
   async function submitBooking() {
     var fn  = document.getElementById("f-firstname");
     var ln  = document.getElementById("f-lastname");
@@ -271,39 +247,42 @@ const App = (() => {
     var ph  = document.getElementById("f-phone");
     var nt  = document.getElementById("f-note");
     var loc = document.getElementById("f-location");
+    var ws  = document.getElementById("f-website");
+    var lin = document.getElementById("f-linkedin");
 
     var valid = true;
     clearErrors();
-    if (!fn || !fn.value.trim())          { showError("err-firstname", "Podaj imie"); valid = false; }
-    if (!ln || !ln.value.trim())          { showError("err-lastname", "Podaj nazwisko"); valid = false; }
-    if (!em || !Helpers.isEmail(em.value)){ showError("err-email", "Podaj poprawny email"); valid = false; }
-    if (!ph || !ph.value.trim())          { showError("err-phone", "Podaj numer telefonu"); valid = false; }
-    else if (!Helpers.isPhone(ph.value))  { showError("err-phone", "Niepoprawny numer"); valid = false; }
+
+    if (!fn || !fn.value.trim())           { showError("err-firstname", "Podaj imie"); valid = false; }
+    if (!ln || !ln.value.trim())            { showError("err-lastname",  "Podaj nazwisko"); valid = false; }
+    if (!em || !Helpers.isEmail(em.value))  { showError("err-email", "Podaj poprawny email"); valid = false; }
+    if (!ph || !ph.value.trim())            { showError("err-phone", "Podaj numer telefonu"); valid = false; }
+    else if (!Helpers.isPhone(ph.value))    { showError("err-phone", "Niepoprawny numer"); valid = false; }
     if (!valid) return;
 
     var btn = document.getElementById("submit-btn");
     if (btn) { btn.disabled = true; btn.textContent = "Wysylam..."; }
 
     var guests = [];
+    var guestsValid = true;
     for (var i = 1; i <= state.guestCount; i++) {
       var gfn = document.getElementById("g-fn-" + i);
       var gln = document.getElementById("g-ln-" + i);
       var gem = document.getElementById("g-em-" + i);
       var gph = document.getElementById("g-ph-" + i);
-      if (gfn) {
-        if (!gfn.value.trim()) { gfn.style.borderColor="var(--red)"; valid = false; }
-        if (!gln || !gln.value.trim()) { if(gln) gln.style.borderColor="var(--red)"; valid = false; }
-        if (!gem || !Helpers.isEmail(gem.value)) { if(gem) gem.style.borderColor="var(--red)"; valid = false; }
-        if (!gph || !gph.value.trim()) { if(gph) gph.style.borderColor="var(--red)"; valid = false; }
-        if (valid) {
-          guests.push({ firstName: gfn.value.trim(), lastName: gln.value.trim(), email: gem.value.trim(), phone: gph ? gph.value.trim() : "" });
-        }
+      if (!gfn || !gfn.value.trim()) { if (gfn) gfn.style.borderColor = "#dc2626"; guestsValid = false; }
+      if (!gln || !gln.value.trim()) { if (gln) gln.style.borderColor = "#dc2626"; guestsValid = false; }
+      if (!gem || !Helpers.isEmail(gem.value)) { if (gem) gem.style.borderColor = "#dc2626"; guestsValid = false; }
+      if (!gph || !gph.value.trim()) { if (gph) gph.style.borderColor = "#dc2626"; guestsValid = false; }
+      if (guestsValid) {
+        guests.push({ firstName: gfn.value.trim(), lastName: gln.value.trim(), email: gem.value.trim(), phone: gph.value.trim() });
       }
     }
-    if (!valid) { var btn2 = document.getElementById("submit-btn"); if(btn2){btn2.disabled=false;btn2.textContent="Potwierdź rezerwację →";} return; }
+    if (!guestsValid) {
+      if (btn) { btn.disabled = false; btn.textContent = "Potwierdz rezerwacje \u2192"; }
+      return;
+    }
 
-    var ws  = document.getElementById("f-website");
-    var lin = document.getElementById("f-linkedin");
     var booking = {
       date:        state.selectedDate,
       hour:        state.selectedHour,
@@ -313,10 +292,10 @@ const App = (() => {
       firstName:   fn.value.trim(),
       lastName:    ln.value.trim(),
       email:       em.value.trim(),
-      phone:       ph ? ph.value.trim() : "",
+      phone:       ph.value.trim(),
       website:     ws  ? ws.value.trim()  : "",
       linkedin:    lin ? lin.value.trim() : "",
-      note:        nt ? nt.value.trim() : "",
+      note:        nt  ? nt.value.trim()  : "",
       guests:      guests,
       totalPeople: 1 + guests.length,
     };
@@ -324,7 +303,7 @@ const App = (() => {
     var saved = Storage.addBooking(booking);
     var n8nResult = await N8N.newBooking(saved);
     if (!n8nResult.ok && !n8nResult.mock) {
-      Helpers.toast("Wystapil blad — skontaktuj sie bezposrednio", "error");
+      Helpers.toast("Blad przy wysylaniu — skontaktuj sie bezposrednio", "error");
     }
 
     state.step = "success";
@@ -332,40 +311,35 @@ const App = (() => {
     showPanel("panel-success");
   }
 
-  // ── SUCCESS ──────────────────────────────
   function renderSuccess(booking) {
     var el = document.getElementById("success-details");
     if (!el) return;
     var typeLabel = booking.meetingType === "online"
-      ? "Google Meet — link wyslemy na email"
-      : "Spotkanie na zywo" + (booking.location ? " · " + booking.location : "");
+      ? "Google Meet \u2014 link wyslemy na email"
+      : "Spotkanie na zywo" + (booking.location ? " \u00b7 " + booking.location : "");
     var guestsHtml = "";
     if (booking.guests && booking.guests.length > 0) {
-      guestsHtml = '<div style="font-size:12px;color:var(--text-2);margin-top:6px">Uczestnicy: '
+      guestsHtml = '<div style="font-size:12px;color:#475569;margin-top:6px">Uczestnicy: '
         + booking.guests.map(function(g) { return g.firstName + " " + g.lastName; }).join(", ")
         + '</div>';
     }
     el.innerHTML =
-      '<p style="font-size:14px;color:var(--text-2);margin-bottom:12px">'
-      + 'Potwierdzenie wyslano na <strong>' + booking.email + '</strong></p>'
-      + '<div style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius);padding:14px 16px;text-align:left">'
+      '<p style="font-size:14px;color:#475569;margin-bottom:12px">Potwierdzenie wyslano na <strong>' + booking.email + '</strong></p>'
+      + '<div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:10px;padding:14px 16px;text-align:left">'
       + '<div style="font-size:14px;font-weight:600;margin-bottom:4px">' + CONFIG.meetingTitle + '</div>'
-      + '<div style="font-size:13px;color:var(--text-2)">' + Helpers.formatDate(booking.date) + ' · ' + booking.hour + ' · ' + booking.duration + ' min</div>'
-      + '<div style="font-size:13px;color:var(--blue);margin-top:4px">' + typeLabel + '</div>'
+      + '<div style="font-size:13px;color:#475569">' + Helpers.formatDate(booking.date) + ' \u00b7 ' + booking.hour + ' \u00b7 ' + booking.duration + ' min</div>'
+      + '<div style="font-size:13px;color:#2563eb;margin-top:4px">' + typeLabel + '</div>'
       + guestsHtml + '</div>';
   }
 
-  // ── SIDEBAR: pokazuj/ukrywaj meta i chipy ──────────────────────────
   function updateSidebar() {
     var metaBox = document.getElementById("bc-meta-box");
     var chips   = document.getElementById("bc-chips");
     var showMeta = (state.step === "meetingtype" || state.step === "form" || state.step === "success");
-
     if (metaBox) metaBox.style.display = showMeta ? "block" : "none";
     if (chips)   chips.style.display   = showMeta ? "none"  : "flex";
   }
 
-  // ── PANEL SWITCH ──────────────────────────
   function showPanel(id) {
     ["panel-calendar","panel-time","panel-meetingtype","panel-form","panel-success"].forEach(function(pid) {
       var el = document.getElementById(pid);
@@ -376,7 +350,6 @@ const App = (() => {
     updateSidebar();
   }
 
-  // ── BACK ──────────────────────────────
   function goBack() {
     if (state.step === "time") {
       state.step = "calendar";
@@ -394,7 +367,6 @@ const App = (() => {
     showPanel("panel-meetingtype");
   }
 
-  // ── UTILS ──────────────────────────────
   function setText(id, val) {
     var el = document.getElementById(id); if (el) el.textContent = val;
   }
@@ -407,17 +379,11 @@ const App = (() => {
   }
 
   return {
-    init: init,
-    selectDate: selectDate,
-    selectHour: selectHour,
-    setDuration: setDuration,
-    setMeetingType: setMeetingType,
-    updateMeta: updateMeta,
-    goToDetails: goToDetails,
-    addGuest: addGuest,
-    removeGuest: removeGuest,
-    submitBooking: submitBooking,
-    goBack: goBack,
+    init: init, selectDate: selectDate, selectHour: selectHour,
+    setDuration: setDuration, setMeetingType: setMeetingType,
+    updateMeta: updateMeta, goToDetails: goToDetails,
+    addGuest: addGuest, removeGuest: removeGuest,
+    submitBooking: submitBooking, goBack: goBack,
     goBackToMeetingType: goBackToMeetingType,
   };
 })();
