@@ -80,8 +80,14 @@ const App = (() => {
     var prev = document.getElementById(prevId);
     var next = document.getElementById(nextId);
     if (prev) prev.onclick = function() {
-      state.month--;
-      if (state.month < 0) { state.month = 11; state.year--; }
+      var now = new Date();
+      var newMonth = state.month - 1;
+      var newYear  = state.year;
+      if (newMonth < 0) { newMonth = 11; newYear--; }
+      // nie cofaj przed aktualnym miesiącem
+      if (newYear < now.getFullYear() || (newYear === now.getFullYear() && newMonth < now.getMonth())) return;
+      state.month = newMonth;
+      state.year  = newYear;
       renderBothCals();
     };
     if (next) next.onclick = function() {
@@ -221,17 +227,19 @@ const App = (() => {
     row.id = "guest-row-" + idx;
     row.innerHTML =
       '<div class="guest-row-header">'
-      + '<div class="guest-row-title">Osoba ' + (idx + 1) + ' (Twoja strona)</div>'
+      + '<div class="guest-row-title">Partner biznesowy</div>'
       + '<button class="btn-remove-guest" type="button" onclick="App.removeGuest(' + idx + ')">&times;</button>'
       + '</div>'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
-      + '<div class="form-group"><label class="form-label">Imie</label>'
+      + '<div class="form-group"><label class="form-label">Imie <span style='color:var(--red)'>*</span></label>'
       + '<input class="form-input" id="g-fn-' + idx + '" placeholder="Anna" /></div>'
-      + '<div class="form-group"><label class="form-label">Nazwisko</label>'
+      + '<div class="form-group"><label class="form-label">Nazwisko <span style='color:var(--red)'>*</span></label>'
       + '<input class="form-input" id="g-ln-' + idx + '" placeholder="Kowalska" /></div>'
       + '</div>'
-      + '<div class="form-group"><label class="form-label">Email</label>'
-      + '<input class="form-input" id="g-em-' + idx + '" type="email" placeholder="anna@firma.pl" /></div>';
+      + '<div class="form-group"><label class="form-label">Email <span style='color:var(--red)'>*</span></label>'
+      + '<input class="form-input" id="g-em-' + idx + '" type="email" placeholder="anna@firma.pl" /></div>'
+      + '<div class="form-group"><label class="form-label">Numer telefonu <span style='color:var(--red)'>*</span></label>'
+      + '<input class="form-input" id="g-ph-' + idx + '" type="tel" placeholder="+48 500 000 000" /></div>';
     container.appendChild(row);
     updateGuestsMeta();
   }
@@ -269,7 +277,8 @@ const App = (() => {
     if (!fn || !fn.value.trim())          { showError("err-firstname", "Podaj imie"); valid = false; }
     if (!ln || !ln.value.trim())          { showError("err-lastname", "Podaj nazwisko"); valid = false; }
     if (!em || !Helpers.isEmail(em.value)){ showError("err-email", "Podaj poprawny email"); valid = false; }
-    if (ph && ph.value && !Helpers.isPhone(ph.value)) { showError("err-phone", "Niepoprawny numer"); valid = false; }
+    if (!ph || !ph.value.trim())          { showError("err-phone", "Podaj numer telefonu"); valid = false; }
+    else if (!Helpers.isPhone(ph.value))  { showError("err-phone", "Niepoprawny numer"); valid = false; }
     if (!valid) return;
 
     var btn = document.getElementById("submit-btn");
@@ -280,11 +289,21 @@ const App = (() => {
       var gfn = document.getElementById("g-fn-" + i);
       var gln = document.getElementById("g-ln-" + i);
       var gem = document.getElementById("g-em-" + i);
-      if (gfn && gfn.value.trim()) {
-        guests.push({ firstName: gfn.value.trim(), lastName: gln ? gln.value.trim() : "", email: gem ? gem.value.trim() : "" });
+      var gph = document.getElementById("g-ph-" + i);
+      if (gfn) {
+        if (!gfn.value.trim()) { gfn.style.borderColor="var(--red)"; valid = false; }
+        if (!gln || !gln.value.trim()) { if(gln) gln.style.borderColor="var(--red)"; valid = false; }
+        if (!gem || !Helpers.isEmail(gem.value)) { if(gem) gem.style.borderColor="var(--red)"; valid = false; }
+        if (!gph || !gph.value.trim()) { if(gph) gph.style.borderColor="var(--red)"; valid = false; }
+        if (valid) {
+          guests.push({ firstName: gfn.value.trim(), lastName: gln.value.trim(), email: gem.value.trim(), phone: gph ? gph.value.trim() : "" });
+        }
       }
     }
+    if (!valid) { var btn2 = document.getElementById("submit-btn"); if(btn2){btn2.disabled=false;btn2.textContent="Potwierdź rezerwację →";} return; }
 
+    var ws  = document.getElementById("f-website");
+    var lin = document.getElementById("f-linkedin");
     var booking = {
       date:        state.selectedDate,
       hour:        state.selectedHour,
@@ -295,6 +314,8 @@ const App = (() => {
       lastName:    ln.value.trim(),
       email:       em.value.trim(),
       phone:       ph ? ph.value.trim() : "",
+      website:     ws  ? ws.value.trim()  : "",
+      linkedin:    lin ? lin.value.trim() : "",
       note:        nt ? nt.value.trim() : "",
       guests:      guests,
       totalPeople: 1 + guests.length,
