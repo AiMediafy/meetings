@@ -34,48 +34,34 @@
   .bc-left {
     display: flex; flex-direction: column;
     overflow: hidden;
-    position: relative;
+    border-right: 1px solid var(--border);
   }
-
-  /* Gradient tylko górna część, dół biały */
-  .bc-left-bg {
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 160px;
-    background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
-    z-index: 0;
-  }
+  .bc-left-bg { display: none; }
 
   .bc-left-content {
-    position: relative; z-index: 1;
     display: flex; flex-direction: column;
     height: 100%; padding: 28px 22px;
-    background: transparent;
   }
 
-  /* Avatar */
   .bc-avatar {
-    width: 54px; height: 54px; border-radius: 50%;
-    background: rgba(255,255,255,.2);
-    border: 2px solid rgba(255,255,255,.5);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--blue-light);
     display: flex; align-items: center; justify-content: center;
-    font-size: 19px; font-weight: 700; color: white;
+    font-size: 18px; font-weight: 700; color: #2563eb;
     margin-bottom: 12px; flex-shrink: 0;
   }
-  .bc-name { font-size: 17px; font-weight: 700; color: white; margin-bottom: 3px; line-height: 1.2; }
-  .bc-role { font-size: 12px; color: rgba(255,255,255,.75); margin-bottom: 0; }
+  .bc-name { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 3px; line-height: 1.2; }
+  .bc-role { font-size: 12px; color: var(--text-2); margin-bottom: 0; }
 
-  /* Divider */
-  .bc-divider { height: 1px; background: rgba(255,255,255,.3); margin: 16px 0; flex-shrink: 0; }
+  .bc-divider { height: 1px; background: var(--border); margin: 14px 0; flex-shrink: 0; }
 
-  /* Meta info (od kroku meetingtype) */
   .bc-meta { display: flex; flex-direction: column; gap: 9px; }
   .bc-meta-item {
     display: flex; align-items: center; gap: 8px;
-    font-size: 12px; color: rgba(255,255,255,.85);
+    font-size: 13px; color: var(--text-2);
   }
-  .bc-meta-item svg { color: rgba(255,255,255,.6); flex-shrink: 0; }
+  .bc-meta-item svg { color: var(--text-3); flex-shrink: 0; }
 
-  /* Chipy kontaktowe */
   .bc-chips { display: flex; flex-direction: column; gap: 6px; }
 
   .bc-chip {
@@ -88,7 +74,7 @@
     transition: all .15s;
     cursor: pointer;
   }
-  .bc-chip:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+  .bc-chip:hover { background: var(--blue-light); border-color: #2563eb; }
 
   .bc-chip-icon {
     width: 24px; height: 24px; border-radius: 6px;
@@ -263,7 +249,7 @@
         </div>
 
         <!-- Chipy kontaktowe — do kroku meetingtype -->
-        <div class="bc-chips" id="bc-chips" style="background:var(--white);margin:0 -22px -28px;padding:12px 14px 16px;border-top:1px solid var(--border);margin-top:auto">
+        <div class="bc-chips" id="bc-chips" style="margin-top:auto;padding-top:14px">
 
           <a href="https://www.linkedin.com/in/jerzy-mediafy/" target="_blank" class="bc-chip">
             <div class="bc-chip-icon" style="background:#0a66c2">
@@ -305,7 +291,7 @@
             <span class="bc-chip-arrow">→</span>
           </a>
 
-          <a href="mailto:jerzy.niewiadowski@mediafy.com.pl" class="bc-chip">
+          <a href="/cdn-cgi/l/email-protection#b0dad5c2cac99eded9d5c7d9d1d4dfc7c3dbd9f0ddd5d4d9d1d6c99ed3dfdd9ec0dc" class="bc-chip">
             <div class="bc-chip-icon" style="background:#f59e0b">
               <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
@@ -475,7 +461,4 @@
 </div>
 
 <div id="toast-container"></div>
-<script src="data.js"></script>
-<script src="app.js"></script>
-</body>
-</html>
+<script data-cfasync="f
