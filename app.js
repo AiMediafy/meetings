@@ -182,6 +182,27 @@ const App = (() => {
 
   // ── KROK 3a→3b: przejdź do danych ──────────────────────────
   function goToDetails() {
+    // Walidacja miejsca dla spotkania na zywo
+    if (state.meetingType === "inperson") {
+      var loc = document.getElementById("f-location");
+      if (!loc || !loc.value.trim()) {
+        if (loc) {
+          loc.style.borderColor = "var(--red)";
+          loc.style.boxShadow = "0 0 0 3px rgba(220,38,38,.15)";
+          loc.focus();
+          setTimeout(function() {
+            loc.style.borderColor = "";
+            loc.style.boxShadow = "";
+          }, 2500);
+        }
+        var hint = document.querySelector("#location-group .form-hint");
+        if (hint) { hint.textContent = "To pole jest wymagane!"; hint.style.color = "var(--red)"; }
+        setTimeout(function() {
+          if (hint) { hint.textContent = "Podaj adres lub nazwe miejsca"; hint.style.color = ""; }
+        }, 2500);
+        return;
+      }
+    }
     state.step = "form";
     var gc = document.getElementById("guests-container");
     if (gc) gc.innerHTML = "";
@@ -313,6 +334,21 @@ const App = (() => {
       + guestsHtml + '</div>';
   }
 
+  // ── SIDEBAR: pokazuj/ukrywaj meta i LinkedIn ──────────────────────────
+  function updateSidebar() {
+    var metaBox     = document.getElementById("bc-meta-box");
+    var linkedinCard = document.getElementById("linkedin-card");
+    var showMeta    = (state.step === "meetingtype" || state.step === "form" || state.step === "success");
+
+    if (metaBox) {
+      metaBox.style.display = showMeta ? "flex" : "none";
+      metaBox.style.flexDirection = "column";
+    }
+    if (linkedinCard) {
+      linkedinCard.style.display = showMeta ? "none" : "block";
+    }
+  }
+
   // ── PANEL SWITCH ──────────────────────────
   function showPanel(id) {
     ["panel-calendar","panel-time","panel-meetingtype","panel-form","panel-success"].forEach(function(pid) {
@@ -322,10 +358,11 @@ const App = (() => {
     });
     var target = document.getElementById(id);
     if (!target) return;
-    if (id === "panel-time")    { target.style.display = "block"; return; }
-    if (id === "panel-success") { target.style.display = "flex";  return; }
+    if (id === "panel-time")    { target.style.display = "block"; updateSidebar(); return; }
+    if (id === "panel-success") { target.style.display = "flex";  updateSidebar(); return; }
     target.style.display = "flex";
     target.style.flexDirection = "column";
+    updateSidebar();
   }
 
   // ── BACK ──────────────────────────────
