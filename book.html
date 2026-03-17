@@ -9,36 +9,12 @@
 <link rel="stylesheet" href="style.css" />
 <style>
   .hidden { display: none !important; }
-  html, body { height: 100%; overflow: hidden; background: #f1f5f9; }
+  html, body { height: 100%; overflow: hidden; background: #eef2f7; }
 
-  /* ── KOMPAKTOWY KALENDARZ — zawsze mieści się w oknie ── */
-  .cal-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 4px !important;
-    width: 100% !important;
-  }
-  .cal-day {
-    height: 38px !important;
-    width: 100% !important;
-    font-size: 13px !important;
-    border-radius: 6px !important;
-  }
-  .cal-day-name {
-    font-size: 11px !important;
-    padding: 2px 0 8px !important;
-    text-align: center !important;
-    width: 100% !important;
-  }
-
-  /* ── WRAPPER ── */
   .booking-wrap {
     height: calc(100vh - 60px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 16px;
-    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px 16px; overflow: hidden;
   }
 
   /* ── GŁÓWNA KARTA ── */
@@ -46,96 +22,115 @@
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 20px;
-    box-shadow: 0 8px 40px rgba(0,0,0,.09);
-    width: 100%;
-    max-width: 1000px;
-    height: 100%;
-    max-height: 680px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.10);
+    width: 100%; max-width: 1000px;
+    height: 100%; max-height: 680px;
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 270px 1fr;
     overflow: hidden;
   }
 
-  /* ══════════════════════════════
-     LEWA KOLUMNA — host info
-  ══════════════════════════════ */
+  /* ══ LEWA KOLUMNA ══ */
   .bc-left {
-    border-right: 1px solid var(--border);
-    padding: 36px 24px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .bc-avatar {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: var(--blue-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: var(--blue-dark);
-    margin-bottom: 12px; flex-shrink: 0;
-  }
-  .bc-name { font-size: 18px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
-  .bc-role { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
-  .bc-divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
-
-  .bc-meta { display: flex; flex-direction: column; gap: 11px; }
-  .bc-meta-item {
-    display: flex; align-items: flex-start; gap: 9px;
-    font-size: 13px; color: var(--text-2); line-height: 1.4;
-  }
-  .bc-meta-item svg { color: var(--text-3); flex-shrink: 0; margin-top: 1px; }
-
-  /* ══════════════════════════════
-     PRAWA KOLUMNA — 3 panele
-  ══════════════════════════════ */
-  .bc-right {
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     overflow: hidden;
     position: relative;
   }
 
-  /* ── PANEL: krok 1 — sam kalendarz ── */
-  #panel-calendar {
-    display: flex;
-    flex-direction: column;
-    padding: 28px 28px;
-    height: 100%;
-    overflow: hidden;
-  }
-  #panel-meetingtype, #panel-form {
-    padding: 32px 36px !important;
+  /* Gradient tylko górna część, dół biały */
+  .bc-left-bg {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 160px;
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+    z-index: 0;
   }
 
-  /* ── PANEL: krok 2 — kalendarz + godziny obok siebie ── */
-  #panel-time {
+  .bc-left-content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    height: 100%; padding: 28px 22px;
+    background: transparent;
+  }
+
+  /* Avatar */
+  .bc-avatar {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px; font-weight: 700; color: white;
+    margin-bottom: 12px; flex-shrink: 0;
+  }
+  .bc-name { font-size: 17px; font-weight: 700; color: white; margin-bottom: 3px; line-height: 1.2; }
+  .bc-role { font-size: 12px; color: rgba(255,255,255,.75); margin-bottom: 0; }
+
+  /* Divider */
+  .bc-divider { height: 1px; background: rgba(255,255,255,.3); margin: 16px 0; flex-shrink: 0; }
+
+  /* Meta info (od kroku meetingtype) */
+  .bc-meta { display: flex; flex-direction: column; gap: 9px; }
+  .bc-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: rgba(255,255,255,.85);
+  }
+  .bc-meta-item svg { color: rgba(255,255,255,.6); flex-shrink: 0; }
+
+  /* Chipy kontaktowe */
+  .bc-chips { display: flex; flex-direction: column; gap: 6px; }
+
+  .bc-chip {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .bc-chip:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+
+  .bc-chip-icon {
+    width: 24px; height: 24px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .bc-chip-label { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+  .bc-chip-arrow { font-size: 11px; color: var(--text-3); }
+
+  /* ══ PRAWA KOLUMNA ══ */
+  .bc-right {
+    display: flex; flex-direction: column;
+    overflow: hidden; position: relative;
+  }
+
+  /* Wszystkie panele domyślnie ukryte */
+  .bc-panel {
     display: none;
-    height: 100%;
-    overflow: hidden;
-  }
-  .panel-time-inner {
-    display: grid;
-    grid-template-columns: 1fr 280px;
+    flex-direction: column;
     height: 100%;
   }
+  .bc-panel.active { display: flex; }
+
+  /* Panel calendar */
+  #panel-calendar { padding: 28px 28px; overflow: hidden; }
+
+  /* Panel time — specjalny grid */
+  #panel-time { flex-direction: row; overflow: hidden; }
   .pt-cal {
-    padding: 28px 20px;
+    flex: 1; padding: 28px 20px;
     border-right: 1px solid var(--border);
-    overflow: hidden;
+    overflow: hidden; display: flex; flex-direction: column;
   }
   .pt-slots {
-    padding: 28px 16px 28px 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+    width: 240px; padding: 28px 16px 28px 20px;
+    overflow-y: auto; display: flex; flex-direction: column;
   }
-  .pt-slots-date {
-    font-size: 15px; font-weight: 700; color: var(--text);
-    margin-bottom: 16px; flex-shrink: 0;
-  }
-  .pt-slots-list { display: flex; flex-direction: column; gap: 8px; }
+  .pt-slots-date { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px; flex-shrink: 0; }
+  .pt-slots-list { display: flex; flex-direction: column; gap: 7px; }
   .pt-slot {
     display: flex; align-items: center; justify-content: center;
-    padding: 11px 16px;
+    padding: 10px 14px;
     border: 1.5px solid var(--blue-mid);
     border-radius: var(--radius);
     cursor: pointer; transition: all .15s;
@@ -143,141 +138,84 @@
     font-size: 14px; font-weight: 600; color: var(--blue);
   }
   .pt-slot:hover { background: var(--blue); color: white; border-color: var(--blue); }
-  .pt-slot.taken {
-    border-color: var(--border); color: var(--text-3);
-    background: var(--bg); cursor: default; font-weight: 400;
-  }
+  .pt-slot.taken { border-color: var(--border); color: var(--text-3); background: var(--bg); cursor: default; font-weight: 400; }
   .pt-slot.taken:hover { background: var(--bg); color: var(--text-3); border-color: var(--border); }
 
-  /* ── PANEL: krok 3 — formularz ── */
-  #panel-form {
-    display: none;
-    padding: 36px 32px;
-    overflow-y: auto;
-    height: 100%;
-  }
+  /* Panele scroll */
+  #panel-meetingtype { padding: 32px 32px; overflow-y: auto; }
+  #panel-form        { padding: 28px 32px; overflow-y: auto; }
+  #panel-success     { align-items: center; justify-content: center; text-align: center; padding: 32px; }
 
-  /* ── PANEL: sukces ── */
-  #panel-success {
-    display: none;
-    padding: 36px 32px;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-  }
-  .bc-success-icon {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; margin: 0 auto 20px; color: var(--green);
-  }
-  #panel-success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  #panel-success p  { font-size: 14px; color: var(--text-2); margin-bottom: 4px; }
-
-  /* ── CONTACT CHIPS ── */
-  .contact-chip {
-    display: flex; align-items: center; gap: 9px;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    text-decoration: none;
-    transition: all .15s;
-    background: var(--white);
-    cursor: pointer;
-  }
-  .chip-icon {
-    width: 26px; height: 26px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .chip-label { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
-  .chip-arrow { font-size: 12px; color: var(--text-3); }
-
-  /* ── DURATION BUTTONS ── */
-  .dur-btn {
-    padding: 9px 20px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 14px; font-weight: 500;
-    background: var(--white); color: var(--text);
-    cursor: pointer; transition: all .15s;
-    font-family: inherit;
-  }
-  .dur-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
-  .dur-btn.active { border-color: var(--blue); background: var(--blue); color: white; }
-
-  /* ── BACK ── */
+  /* Back btn */
   .bc-back {
     display: inline-flex; align-items: center; gap: 5px;
     font-size: 13px; color: var(--text-2); font-weight: 500;
     background: none; border: none; cursor: pointer; padding: 0;
-    margin-bottom: 16px; transition: color .15s; flex-shrink: 0;
+    margin-bottom: 14px; transition: color .15s; flex-shrink: 0;
   }
   .bc-back:hover { color: var(--blue); }
 
-  /* ── STEP TITLE ── */
   .bc-step-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
   .bc-step-sub   { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
 
-  /* ── KALENDARZ (wspólne style) ── */
-  .bc-cal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .bc-cal-title { font-size: 15px; font-weight: 600; }
+  /* Kalendarz */
+  .bc-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .bc-cal-title  { font-size: 15px; font-weight: 600; }
+  .cal-grid { display: grid !important; grid-template-columns: repeat(7, 1fr) !important; gap: 3px !important; width: 100% !important; }
+  .cal-day      { height: 34px !important; width: 100% !important; font-size: 12px !important; border-radius: 6px !important; }
+  .cal-day-name { font-size: 10px !important; padding: 2px 0 7px !important; text-align: center !important; width: 100% !important; }
 
-  /* ── FORMULARZ ── */
-  .bc-form { display: flex; flex-direction: column; gap: 12px; }
+  /* Summary chip */
   .bc-summary {
     display: flex; align-items: center; gap: 12px;
     background: var(--blue-light); border: 1px solid var(--blue-mid);
-    border-radius: var(--radius); padding: 12px 14px;
+    border-radius: var(--radius); padding: 11px 14px; margin-bottom: 20px;
   }
   .bc-summary-date { font-size: 14px; font-weight: 600; color: var(--text); }
   .bc-summary-time { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 
-  /* Typ spotkania */
-  .meeting-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .meeting-type-btn {
+  /* Duration buttons */
+  .dur-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .dur-btn {
+    padding: 8px 18px; border: 1.5px solid var(--border);
+    border-radius: var(--radius); font-size: 13px; font-weight: 500;
+    background: var(--white); color: var(--text);
+    cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .dur-btn:hover  { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .dur-btn.active { border-color: var(--blue); background: var(--blue); color: white; }
+
+  /* Meeting type */
+  .mt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .mt-btn {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 10px 8px; border: 1.5px solid var(--border);
+    padding: 12px 8px; border: 1.5px solid var(--border);
     border-radius: var(--radius); cursor: pointer; transition: all .15s;
     background: var(--white); font-family: inherit;
   }
-  .meeting-type-btn:hover { border-color: var(--blue); background: var(--blue-light); }
-  .meeting-type-btn.active { border-color: var(--blue); background: var(--blue-light); }
-  .mt-icon  { font-size: 18px; }
-  .mt-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .mt-btn:hover  { border-color: var(--blue); background: var(--blue-light); }
+  .mt-btn.active { border-color: var(--blue); background: var(--blue-light); }
+  .mt-icon  { font-size: 20px; }
+  .mt-label { font-size: 13px; font-weight: 600; color: var(--text); }
   .mt-sub   { font-size: 11px; color: var(--text-3); text-align: center; line-height: 1.3; }
-  .meeting-type-btn.active .mt-label { color: var(--blue-dark); }
+  .mt-btn.active .mt-label { color: var(--blue-dark); }
 
-  /* Goście */
-  .guest-row {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
+  /* Form */
+  .bc-form { display: flex; flex-direction: column; gap: 11px; }
+
+  /* Guest row */
+  .guest-row { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
   .guest-row-header { display: flex; justify-content: space-between; align-items: center; }
   .guest-row-title  { font-size: 13px; font-weight: 600; }
-  .btn-remove-guest {
-    background: none; border: none; cursor: pointer;
-    font-size: 20px; color: var(--text-3); line-height: 1;
-    padding: 0 4px; transition: color .15s;
-  }
-  .btn-remove-guest:hover { color: var(--red); }
+  .btn-remove { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-3); line-height: 1; padding: 0 4px; }
+  .btn-remove:hover { color: var(--red); }
 
-  /* ── LEFT META (od kroku form) ── */
-  #bc-meta-box { margin-top: 8px; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 760px) {
-    .booking-card { grid-template-columns: 1fr; height: auto; }
-    .bc-left { border-right: none; border-bottom: 1px solid var(--border); padding: 24px 20px; }
-    .panel-time-inner { grid-template-columns: 1fr; }
-    .pt-cal { border-right: none; border-bottom: 1px solid var(--border); }
-    #panel-calendar, #panel-form, #panel-success { padding: 24px 20px; }
+  /* Success */
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin: 0 auto 20px; color: var(--green);
   }
 </style>
 </head>
@@ -293,114 +231,97 @@
 <div class="booking-wrap">
   <div class="booking-card">
 
-    <!-- ══ LEWA: host info ══ -->
+    <!-- ══ LEWA KOLUMNA ══ -->
     <div class="bc-left">
-      <div class="bc-avatar" id="host-initials">JN</div>
-      <div class="bc-name" id="host-name">Ładowanie…</div>
-      <div class="bc-role" id="host-role"></div>
-      <div class="bc-divider"></div>
+      <div class="bc-left-bg"></div>
+      <div class="bc-left-content">
+        <div class="bc-avatar" id="host-initials">JN</div>
+        <div class="bc-name"  id="host-name">Ładowanie…</div>
+        <div class="bc-role"  id="host-role"></div>
+        <div class="bc-divider"></div>
 
-      <!-- Meta — pojawia się od kroku meetingtype -->
-      <div id="bc-meta-box" style="display:none;flex-direction:column;gap:11px">
-        <div class="bc-meta-item">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span id="meta-duration">30 min</span>
+        <!-- Meta — od kroku meetingtype -->
+        <div id="bc-meta-box" style="display:none">
+          <div class="bc-meta">
+            <div class="bc-meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span id="meta-duration">30 min</span>
+            </div>
+            <div class="bc-meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+              <span id="meta-type-label">Google Meet</span>
+            </div>
+            <div class="bc-meta-item hidden" id="meta-location-row">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="meta-location-label"></span>
+            </div>
+            <div class="bc-meta-item hidden" id="meta-guests-row">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <span id="meta-guests-label"></span>
+            </div>
+          </div>
         </div>
-        <div class="bc-meta-item" id="meta-type-row">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
-          <span id="meta-type-label">Google Meet</span>
+
+        <!-- Chipy kontaktowe — do kroku meetingtype -->
+        <div class="bc-chips" id="bc-chips" style="background:var(--white);margin:0 -22px -28px;padding:12px 14px 16px;border-top:1px solid var(--border);margin-top:auto">
+
+          <a href="https://www.linkedin.com/in/jerzy-mediafy/" target="_blank" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#0a66c2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <span class="bc-chip-label">LinkedIn</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
+          <a href="https://mediafy.com.pl" target="_blank" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#f59e0b">
+              <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20"/></svg>
+            </div>
+            <span class="bc-chip-label">mediafy.com.pl</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
+          <a href="https://tvai.online" target="_blank" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#2563eb">
+              <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20"/></svg>
+            </div>
+            <span class="bc-chip-label">TVAI.online</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
+          <a href="https://ligo.website" target="_blank" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#f59e0b">
+              <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20"/></svg>
+            </div>
+            <span class="bc-chip-label">LiGo.website</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
+          <a href="tel:+48794027325" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#2563eb">
+              <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.42 1.18 2 2 0 012.42 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <span class="bc-chip-label">+48 794 027 325</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
+          <a href="mailto:jerzy.niewiadowski@mediafy.com.pl" class="bc-chip">
+            <div class="bc-chip-icon" style="background:#f59e0b">
+              <svg width="13" height="13" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <span class="bc-chip-label">Email</span>
+            <span class="bc-chip-arrow">→</span>
+          </a>
+
         </div>
-        <div class="bc-meta-item hidden" id="meta-location-row">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span id="meta-location-label"></span>
-        </div>
-        <div class="bc-meta-item hidden" id="meta-guests-row">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          <span id="meta-guests-label"></span>
-        </div>
-      </div>
-
-      <!-- Fiszka kontaktowa — widoczna na kroках calendar i time -->
-      <div id="linkedin-card" style="margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:8px">
-
-        <!-- LinkedIn -->
-        <a href="https://www.linkedin.com/in/jerzy-mediafy/" target="_blank"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='#0077b5';this.style.background='#eff6ff'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:#0077b5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-          </div>
-          <span class="chip-label">LinkedIn</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
-        <!-- Strony www -->
-        <a href="https://mediafy.com.pl" target="_blank"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='var(--blue);this.style.background=var(--blue-light)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:var(--blue)">
-            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          </div>
-          <span class="chip-label">mediafy.com.pl</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
-        <a href="https://TVAI.online" target="_blank"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='var(--blue)';this.style.background='var(--blue-light)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:#6366f1">
-            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          </div>
-          <span class="chip-label">TVAI.online</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
-        <a href="https://LiGo.website" target="_blank"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='var(--blue)';this.style.background='var(--blue-light)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:#10b981">
-            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          </div>
-          <span class="chip-label">LiGo.website</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
-        <!-- Tel -->
-        <a href="tel:+48794027325"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='var(--green)';this.style.background='#f0fdf4'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:var(--green)">
-            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.42 1.18 2 2 0 012.42 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          </div>
-          <span class="chip-label">+48 794 027 325</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
-        <!-- Email -->
-        <a href="mailto:jerzy.niewiadowski@mediafy.com.pl"
-          class="contact-chip"
-          onmouseover="this.style.borderColor='var(--blue)';this.style.background='var(--blue-light)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
-          <div class="chip-icon" style="background:#f59e0b">
-            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <span class="chip-label">Email</span>
-          <span class="chip-arrow">→</span>
-        </a>
-
       </div>
     </div>
 
-    <!-- ══ PRAWA: panele ══ -->
+    <!-- ══ PRAWA KOLUMNA ══ -->
     <div class="bc-right">
 
-      <!-- PANEL 1: tylko kalendarz -->
-      <div id="panel-calendar">
+      <!-- PANEL 1: kalendarz -->
+      <div id="panel-calendar" class="bc-panel active">
         <div class="bc-step-title">Wybierz datę</div>
         <div class="bc-step-sub">Zaznacz dzień, aby zobaczyć dostępne godziny</div>
         <div class="bc-cal-header">
@@ -411,33 +332,29 @@
         <div class="cal-grid" id="cal-grid-1"></div>
       </div>
 
-      <!-- PANEL 2: kalendarz + godziny -->
-      <div id="panel-time">
-        <div class="panel-time-inner">
-          <!-- mini kalendarz -->
-          <div class="pt-cal">
-            <div class="bc-cal-header">
-              <button class="cal-nav" id="cal-prev-2">‹</button>
-              <span class="bc-cal-title" id="cal-month-2"></span>
-              <button class="cal-nav" id="cal-next-2">›</button>
-            </div>
-            <div class="cal-grid" id="cal-grid-2"></div>
+      <!-- PANEL 2: kalendarz + sloty -->
+      <div id="panel-time" class="bc-panel">
+        <div class="pt-cal">
+          <div class="bc-cal-header">
+            <button class="cal-nav" id="cal-prev-2">‹</button>
+            <span class="bc-cal-title" id="cal-month-2"></span>
+            <button class="cal-nav" id="cal-next-2">›</button>
           </div>
-          <!-- sloty -->
-          <div class="pt-slots">
-            <div class="pt-slots-date" id="slots-date-label"></div>
-            <div class="pt-slots-list" id="slots-container"></div>
-          </div>
+          <div class="cal-grid" id="cal-grid-2"></div>
+        </div>
+        <div class="pt-slots">
+          <div class="pt-slots-date" id="slots-date-label"></div>
+          <div class="pt-slots-list" id="slots-container"></div>
         </div>
       </div>
 
       <!-- PANEL 3a: forma spotkania -->
-      <div id="panel-meetingtype">
+      <div id="panel-meetingtype" class="bc-panel">
         <button class="bc-back" onclick="App.goBack()">← Wróć</button>
         <div class="bc-step-title">Forma spotkania</div>
-        <div class="bc-step-sub">Jak chcesz się spotkać?</div>
+        <div class="bc-step-sub">Jak chcesz się spotkać i ile czasu masz?</div>
 
-        <div class="bc-summary" style="margin-bottom:24px">
+        <div class="bc-summary">
           <div style="font-size:20px">📅</div>
           <div>
             <div class="bc-summary-date" id="summary-date"></div>
@@ -445,10 +362,9 @@
           </div>
         </div>
 
-        <!-- Czas trwania -->
-        <div class="form-group" style="margin-bottom:20px">
-          <label class="form-label" style="font-size:14px;margin-bottom:10px">Czas trwania spotkania</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap" id="duration-btns">
+        <div class="form-group" style="margin-bottom:18px">
+          <label class="form-label">Czas trwania spotkania</label>
+          <div class="dur-btns">
             <button type="button" class="dur-btn active" onclick="App.setDuration(30)" data-dur="30">30 min</button>
             <button type="button" class="dur-btn" onclick="App.setDuration(45)" data-dur="45">45 min</button>
             <button type="button" class="dur-btn" onclick="App.setDuration(60)" data-dur="60">60 min</button>
@@ -456,16 +372,15 @@
           </div>
         </div>
 
-        <!-- Typ spotkania -->
-        <div class="form-group" style="margin-bottom:24px">
-          <label class="form-label" style="font-size:14px;margin-bottom:10px">Miejsce spotkania</label>
-          <div class="meeting-type-grid">
-            <button type="button" class="meeting-type-btn active" id="type-online" onclick="App.setMeetingType('online')">
+        <div class="form-group" style="margin-bottom:18px">
+          <label class="form-label">Miejsce spotkania</label>
+          <div class="mt-grid">
+            <button type="button" class="mt-btn active" id="type-online" onclick="App.setMeetingType('online')">
               <span class="mt-icon">💻</span>
               <span class="mt-label">Google Meet</span>
               <span class="mt-sub">Link wyślemy na email</span>
             </button>
-            <button type="button" class="meeting-type-btn" id="type-inperson" onclick="App.setMeetingType('inperson')">
+            <button type="button" class="mt-btn" id="type-inperson" onclick="App.setMeetingType('inperson')">
               <span class="mt-icon">📍</span>
               <span class="mt-label">Na żywo</span>
               <span class="mt-sub">U Ciebie lub wybrane miejsce</span>
@@ -473,11 +388,10 @@
           </div>
         </div>
 
-        <!-- Miejsce (tylko na żywo) -->
-        <div class="form-group hidden" id="location-group" style="margin-bottom:24px">
-          <label class="form-label">Miejsce spotkania</label>
+        <div class="form-group hidden" id="location-group" style="margin-bottom:18px">
+          <label class="form-label">Adres / nazwa miejsca <span class="req">*</span></label>
           <input class="form-input" id="f-location" placeholder="np. Starbucks Rondo Daszyńskiego, Warszawa" oninput="App.updateMeta()" />
-          <span class="form-hint">Podaj adres lub nazwę miejsca</span>
+          <span class="form-hint" id="location-hint">Wpisz gdzie się spotkamy</span>
         </div>
 
         <button class="btn btn-primary btn-lg btn-full" type="button" onclick="App.goToDetails()">
@@ -485,8 +399,8 @@
         </button>
       </div>
 
-      <!-- PANEL 3b: dane osobowe -->
-      <div id="panel-form" style="display:none">
+      <!-- PANEL 3b: dane -->
+      <div id="panel-form" class="bc-panel">
         <button class="bc-back" onclick="App.goBackToMeetingType()">← Wróć</button>
         <div class="bc-step-title">Twoje dane</div>
         <div class="bc-step-sub">Wyślemy potwierdzenie na Twój email</div>
@@ -518,23 +432,22 @@
             <div class="form-group">
               <label class="form-label">Strona firmowa</label>
               <input class="form-input" id="f-website" placeholder="np. firma.pl" />
-              <span class="form-hint">Opcjonalnie</span>
             </div>
             <div class="form-group">
               <label class="form-label">LinkedIn</label>
               <input class="form-input" id="f-linkedin" placeholder="linkedin.com/in/..." />
-              <span class="form-hint">Opcjonalnie</span>
             </div>
           </div>
 
           <div id="guests-container"></div>
+
           <button type="button" onclick="App.addGuest()"
-            style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);background:none;border:1.5px dashed var(--blue-mid);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:all .15s;font-family:inherit;font-weight:500;width:100%">
+            style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);background:none;border:1.5px dashed var(--blue-mid);border-radius:var(--radius);padding:8px 14px;cursor:pointer;transition:all .15s;font-family:inherit;font-weight:500;width:100%">
             + Dodaj partnera biznesowego
           </button>
 
           <div class="form-group">
-            <label class="form-label" style="display:flex;justify-content:space-between">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
               <span>Krótka notatka</span>
               <span id="note-counter" style="font-weight:400;color:var(--text-3);font-size:12px">0/300</span>
             </label>
@@ -550,13 +463,11 @@
       </div>
 
       <!-- PANEL 4: sukces -->
-      <div id="panel-success" style="display:none">
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%;height:100%">
-          <div class="bc-success-icon">✓</div>
-          <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Spotkanie zarezerwowane!</h2>
-          <div id="success-details"></div>
-          <a href="index.html" class="btn btn-outline" style="margin-top:20px">Wróć na stronę główną</a>
-        </div>
+      <div id="panel-success" class="bc-panel">
+        <div class="success-icon">✓</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Spotkanie zarezerwowane!</h2>
+        <div id="success-details"></div>
+        <a href="index.html" class="btn btn-outline" style="margin-top:20px">Wróć na stronę główną</a>
       </div>
 
     </div>
