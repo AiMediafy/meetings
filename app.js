@@ -355,34 +355,24 @@ const App = (() => {
       + guestsHtml + '</div>';
   }
 
-  // ── SIDEBAR: pokazuj/ukrywaj meta i LinkedIn ──────────────────────────
+  // ── SIDEBAR: pokazuj/ukrywaj meta i chipy ──────────────────────────
   function updateSidebar() {
-    var metaBox     = document.getElementById("bc-meta-box");
-    var linkedinCard = document.getElementById("linkedin-card");
-    var showMeta    = (state.step === "meetingtype" || state.step === "form" || state.step === "success");
+    var metaBox = document.getElementById("bc-meta-box");
+    var chips   = document.getElementById("bc-chips");
+    var showMeta = (state.step === "meetingtype" || state.step === "form" || state.step === "success");
 
-    if (metaBox) {
-      metaBox.style.display = showMeta ? "flex" : "none";
-      metaBox.style.flexDirection = "column";
-    }
-    if (linkedinCard) {
-      linkedinCard.style.display = showMeta ? "none" : "block";
-    }
+    if (metaBox) metaBox.style.display = showMeta ? "block" : "none";
+    if (chips)   chips.style.display   = showMeta ? "none"  : "flex";
   }
 
   // ── PANEL SWITCH ──────────────────────────
   function showPanel(id) {
     ["panel-calendar","panel-time","panel-meetingtype","panel-form","panel-success"].forEach(function(pid) {
       var el = document.getElementById(pid);
-      if (!el) return;
-      el.style.display = "none";
+      if (el) el.classList.remove("active");
     });
     var target = document.getElementById(id);
-    if (!target) return;
-    if (id === "panel-time")    { target.style.display = "block"; updateSidebar(); return; }
-    if (id === "panel-success") { target.style.display = "flex";  updateSidebar(); return; }
-    target.style.display = "flex";
-    target.style.flexDirection = "column";
+    if (target) target.classList.add("active");
     updateSidebar();
   }
 
